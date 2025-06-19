@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Menu, X, Phone } from "lucide-react"
+import { Menu, X, Lock } from "lucide-react"
 
 export default function SiteHeader() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -81,8 +81,8 @@ export default function SiteHeader() {
               className={isScrolled ? "bg-amber-600 hover:bg-amber-700" : "text-white border-white hover:bg-white/10"}
               asChild
             >
-              <Link href="/#contact">
-                <Phone className="h-4 w-4 mr-2" /> Contact Us
+              <Link href="/admin/login">
+                <Lock className="h-4 w-4 mr-2" /> Admin Login
               </Link>
             </Button>
           </div>
@@ -143,8 +143,8 @@ export default function SiteHeader() {
                 onClick={() => setIsMobileMenuOpen(false)}
                 asChild
               >
-                <Link href="/#contact">
-                  <Phone className="h-4 w-4 mr-2" /> Contact Us
+                <Link href="/admin/login">
+                  <Lock className="h-4 w-4 mr-2" /> Admin Login
                 </Link>
               </Button>
             </nav>

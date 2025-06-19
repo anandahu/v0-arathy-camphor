@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import ProductCard from "@/components/product-card"
 import TestimonialCard from "@/components/testimonial-card"
 import { motion } from "framer-motion"
-import { ArrowRight, Phone, Mail, MapPin, Sparkles } from "lucide-react"
+import { ArrowRight, Phone, Mail, MapPin, Sparkles, Lock } from "lucide-react"
 import Link from "next/link"
 import { getProductsByCategory } from "@/lib/products"
 import DecorativePattern from "@/components/decorative-pattern"
@@ -46,12 +46,7 @@ export default function Home() {
                   Explore Products <Sparkles className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="text-white border-white hover:bg-white/10 transition-all duration-300"
-                asChild
-              >
+              <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10" asChild>
                 <Link href="#about">
                   About Us <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
@@ -263,7 +258,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Contact Section */}
+      {/* Contact Section - Modified to display plain text */}
       <section id="contact" className="py-16 bg-amber-800 text-white relative">
         <DecorativePattern className="absolute inset-0 text-white" />
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -326,17 +321,26 @@ export default function Home() {
                       Interested in bulk orders for your store or temple? Contact our wholesale department for special
                       pricing.
                     </p>
-                    <Button
-                      variant="outline"
-                      className="border-white text-white hover:bg-white hover:text-amber-800 transition-all duration-300"
-                      asChild
-                    >
-                      <Link href="/wholesale-enquiry">Contact Wholesale</Link>
-                    </Button>
+                    <p className="font-medium">Wholesale Contact:</p>
+                    <p>wholesale@arathyproducts.com</p>
+                    <p>+91 98765 43211</p>
                   </div>
                 </div>
               </div>
             </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Admin Login Button Section */}
+      <section className="py-8 bg-amber-50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-center">
+            <Button size="lg" className="bg-amber-600 hover:bg-amber-700" asChild>
+              <Link href="/admin/login">
+                <Lock className="h-5 w-5 mr-2" /> Admin Login
+              </Link>
+            </Button>
           </div>
         </div>
       </section>
