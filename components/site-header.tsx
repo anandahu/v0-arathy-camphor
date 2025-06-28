@@ -1,156 +1,96 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Menu, X, Lock } from "lucide-react"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Menu, X } from "lucide-react"
 
 export default function SiteHeader() {
-  const [isScrolled, setIsScrolled] = useState(false)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
+  const pathname = usePathname()
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10)
+  const navigation = [
+    { name: "Home", href: "/" },
+    { name: "Products", href: "/products" },
+    { name: "About", href: "/about" },
+    { name: "Contact", href: "/contact" },
+  ]
+
+  const isCurrentPath = (href: string) => {
+    if (href === "/") {
+      return pathname === "/"
     }
-
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+    return pathname?.startsWith(href)
+  }
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? "bg-white shadow-md py-2" : "bg-transparent py-4"
-      }`}
-    >
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center">
-            <span className={`text-xl font-bold ${isScrolled ? "text-amber-800" : "text-white"}`}>Arathy Products</span>
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-maroon-200 shadow-sm">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <Link href="/" className="flex items-center space-x-3">
+            <img src="/images/arathy-logo.jpg" alt="Arathy Camphor Logo" className="h-10 w-auto rounded-md shadow-sm" />
+            <div className="hidden sm:block">
+              <h1 className="text-lg font-bold text-maroon-900">Arathy Camphor</h1>
+              <p className="text-xs text-maroon-600 -mt-1">& Agarbathy</p>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link
-              href="/"
-              className={`font-medium hover:text-amber-500 transition-colors ${
-                isScrolled ? "text-amber-900" : "text-white"
-              }`}
-            >
-              Home
-            </Link>
-            <Link
-              href="/#products"
-              className={`font-medium hover:text-amber-500 transition-colors ${
-                isScrolled ? "text-amber-900" : "text-white"
-              }`}
-            >
-              Products
-            </Link>
-            <Link
-              href="/#about"
-              className={`font-medium hover:text-amber-500 transition-colors ${
-                isScrolled ? "text-amber-900" : "text-white"
-              }`}
-            >
-              About
-            </Link>
-            <Link
-              href="/#testimonials"
-              className={`font-medium hover:text-amber-500 transition-colors ${
-                isScrolled ? "text-amber-900" : "text-white"
-              }`}
-            >
-              Testimonials
-            </Link>
-            <Link
-              href="/#contact"
-              className={`font-medium hover:text-amber-500 transition-colors ${
-                isScrolled ? "text-amber-900" : "text-white"
-              }`}
-            >
-              Contact
-            </Link>
+            {navigation.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={`text-sm font-medium transition-colors hover:text-maroon-600 ${
+                  isCurrentPath(item.href) ? "text-maroon-600 border-b-2 border-maroon-600 pb-1" : "text-maroon-800"
+                }`}
+              >
+                {item.name}
+              </Link>
+            ))}
           </nav>
 
-          <div className="hidden md:flex items-center">
-            <Button
-              variant={isScrolled ? "default" : "outline"}
-              size="sm"
-              className={isScrolled ? "bg-amber-600 hover:bg-amber-700" : "text-white border-white hover:bg-white/10"}
-              asChild
-            >
-              <Link href="/admin/login">
-                <Lock className="h-4 w-4 mr-2" /> Admin Login
-              </Link>
-            </Button>
-          </div>
+          {/* Mobile Menu */}
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="sm" className="md:hidden">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-64">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center space-x-2">
+                  <img src="/images/arathy-logo.jpg" alt="Arathy Logo" className="h-8 w-auto rounded" />
+                  <span className="font-bold text-maroon-900">Arathy</span>
+                </div>
+                <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)}>
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
 
-          {/* Mobile Menu Button */}
-          <button className="md:hidden" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} aria-label="Toggle menu">
-            {isMobileMenuOpen ? (
-              <X className={isScrolled ? "text-amber-900" : "text-white"} />
-            ) : (
-              <Menu className={isScrolled ? "text-amber-900" : "text-white"} />
-            )}
-          </button>
+              <nav className="space-y-4">
+                {navigation.map((item) => (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isCurrentPath(item.href)
+                        ? "bg-maroon-100 text-maroon-900"
+                        : "text-maroon-700 hover:bg-maroon-50 hover:text-maroon-900"
+                    }`}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+              </nav>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
-
-      {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden bg-white shadow-lg">
-          <div className="container mx-auto px-4 py-4">
-            <nav className="flex flex-col space-y-4">
-              <Link
-                href="/"
-                className="font-medium text-amber-900 hover:text-amber-500 transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Home
-              </Link>
-              <Link
-                href="/#products"
-                className="font-medium text-amber-900 hover:text-amber-500 transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Products
-              </Link>
-              <Link
-                href="/#about"
-                className="font-medium text-amber-900 hover:text-amber-500 transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                About
-              </Link>
-              <Link
-                href="/#testimonials"
-                className="font-medium text-amber-900 hover:text-amber-500 transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Testimonials
-              </Link>
-              <Link
-                href="/#contact"
-                className="font-medium text-amber-900 hover:text-amber-500 transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Contact
-              </Link>
-              <Button
-                className="bg-amber-600 hover:bg-amber-700 w-full"
-                onClick={() => setIsMobileMenuOpen(false)}
-                asChild
-              >
-                <Link href="/admin/login">
-                  <Lock className="h-4 w-4 mr-2" /> Admin Login
-                </Link>
-              </Button>
-            </nav>
-          </div>
-        </div>
-      )}
     </header>
   )
 }

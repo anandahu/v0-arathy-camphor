@@ -1,364 +1,354 @@
-"use client"
-
-import Image from "next/image"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Flame, Leaf, ArrowRight, Phone, Mail, MapPin, Settings, Award, Shield, Clock } from "lucide-react"
+import SiteHeader from "@/components/site-header"
 import ProductCard from "@/components/product-card"
 import TestimonialCard from "@/components/testimonial-card"
-import { motion } from "framer-motion"
-import { ArrowRight, Phone, Mail, MapPin, Sparkles, Lock } from "lucide-react"
-import Link from "next/link"
-import { getProductsByCategory } from "@/lib/products"
+import EnquiryForm from "@/components/enquiry-form"
 import DecorativePattern from "@/components/decorative-pattern"
 import DecorativeDivider from "@/components/decorative-divider"
+import { products } from "@/lib/products"
 
-export default function Home() {
-  const agarbathiProducts = getProductsByCategory("agarbathi")
-  const camphorProducts = getProductsByCategory("camphor")
+export default function HomePage() {
+  const featuredProducts = products.slice(0, 6)
 
   return (
-    <main className="flex min-h-screen flex-col">
+    <div className="min-h-screen bg-gradient-to-b from-maroon-50 via-burgundy-50 to-flame-50">
+      <SiteHeader />
+
+      {/* Admin Panel Link */}
+      <div className="fixed top-20 right-4 z-40">
+        <Link href="/admin">
+          <Button
+            variant="outline"
+            size="sm"
+            className="bg-white/90 backdrop-blur-sm border-maroon-200 text-maroon-800 hover:bg-maroon-50 shadow-lg"
+          >
+            <Settings className="h-4 w-4 mr-2" />
+            Admin Panel
+          </Button>
+        </Link>
+      </div>
+
       {/* Hero Section */}
-      <section className="relative h-[80vh] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="/images/incense-background.jpeg"
-            alt="Incense and brass vessels"
-            fill
-            className="object-cover brightness-50"
-            priority
-          />
-        </div>
-        <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6">
-              Arathy Camphor & Arathy Agarbathy
-            </h1>
-            <p className="text-xl sm:text-2xl text-white/90 mb-8 max-w-3xl mx-auto">
-              Premium quality agarbathies and camphor for your devotional needs
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+      <section
+        className="relative py-20 px-4 text-center overflow-hidden"
+        style={{
+          backgroundImage: `linear-gradient(rgba(139, 26, 26, 0.7), rgba(116, 29, 29, 0.5)), url('/images/temple-ritual.png')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-b from-maroon-900/40 via-burgundy-800/40 to-maroon-800/40"></div>
+        <div className="relative max-w-4xl mx-auto">
+          <DecorativePattern className="absolute -top-10 -left-10 w-20 h-20 text-flame-300/30" />
+          <DecorativePattern className="absolute -bottom-10 -right-10 w-20 h-20 text-flame-300/30" />
+
+          <Badge className="mb-6 bg-maroon-600/90 text-white border-maroon-500">
+            Premium Quality Spiritual Products
+          </Badge>
+
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white">
+            Divine Fragrance
+            <span className="block text-flame-200">Sacred Moments</span>
+          </h1>
+
+          <p className="text-xl md:text-2xl mb-8 text-flame-100 max-w-2xl mx-auto leading-relaxed">
+            Experience the divine fragrance of our premium camphor and incense products, crafted with devotion for your
+            spiritual journey.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/products">
+              <Button size="lg" className="bg-maroon-600 hover:bg-maroon-700 text-white shadow-xl">
+                <Flame className="mr-2 h-5 w-5" />
+                Explore Products
+              </Button>
+            </Link>
+            <Link href="/contact">
               <Button
                 size="lg"
-                className="bg-amber-600 hover:bg-amber-700 transition-all duration-300 transform hover:scale-105"
-                asChild
+                variant="outline"
+                className="bg-white/10 border-white text-white hover:bg-white hover:text-maroon-900 backdrop-blur-sm"
               >
-                <Link href="#products">
-                  Explore Products <Sparkles className="ml-2 h-5 w-5" />
-                </Link>
+                Contact Us
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-              <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10" asChild>
-                <Link href="#about">
-                  About Us <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* About Section */}
-      <section id="about" className="py-16 bg-amber-50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto text-center">
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-3xl font-bold text-amber-800 mb-6">Welcome to Jyothys Enterprises</h2>
-              <p className="text-lg text-amber-900/80 mb-8">
-                For over two decades, we have been crafting the finest quality agarbathies and camphor products,
-                bringing divine fragrances to homes and temples across the country. Our products are made with
-                traditional methods and the purest ingredients to enhance your spiritual experience.
-              </p>
-              <div className="flex justify-center">
-                <Image
-                  src="/images/ritual-fire.jpeg"
-                  alt="Traditional ritual with fire"
-                  width={600}
-                  height={400}
-                  className="rounded-lg shadow-lg"
-                />
-              </div>
-            </motion.div>
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* Agarbathi Products Section */}
-      <section id="products" className="py-16 bg-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-3xl font-bold text-center text-amber-800 mb-4">Our Premium Agarbathies</h2>
-            <div className="w-24 h-1 bg-amber-500 mx-auto mb-12"></div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {agarbathiProducts.map((product, index) => (
-                <motion.div
-                  key={product.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                >
-                  <ProductCard product={product} />
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </section>
+      {/* Features Section */}
+      <section className="py-16 px-4 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-maroon-900 mb-4">Why Choose Arathy?</h2>
+            <p className="text-lg text-maroon-600 max-w-2xl mx-auto">
+              Discover what makes our products special and trusted by thousands of devotees worldwide.
+            </p>
+          </div>
 
-      {/* Camphor Products Section */}
-      <section className="py-16 bg-amber-50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-3xl font-bold text-center text-amber-800 mb-4">Pure Camphor Products</h2>
-            <div className="w-24 h-1 bg-amber-500 mx-auto mb-12"></div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {camphorProducts.map((product, index) => (
-                <motion.div
-                  key={product.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                >
-                  <ProductCard product={product} />
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </section>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <Card className="border-maroon-200 hover:shadow-lg transition-shadow bg-gradient-to-br from-white to-maroon-50">
+              <CardHeader className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-maroon-600 to-burgundy-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Leaf className="h-8 w-8 text-white" />
+                </div>
+                <CardTitle className="text-maroon-900">100% Natural</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-maroon-600 text-center">
+                  Made from pure, natural ingredients without any artificial additives or chemicals.
+                </p>
+              </CardContent>
+            </Card>
 
-      {/* Devotional Use Section */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row items-center gap-12">
-            <motion.div
-              className="lg:w-1/2"
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-3xl font-bold text-amber-800 mb-6">Enhancing Your Devotional Experience</h2>
-              <p className="text-lg text-amber-900/80 mb-6">
-                Our products are crafted to enhance your spiritual rituals and create a serene atmosphere for prayer and
-                meditation. The fragrances are carefully selected to invoke a sense of peace and devotion.
-              </p>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-start">
-                  <span className="text-amber-600 mr-2">•</span>
-                  <span>Perfect for daily puja and special occasions</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-amber-600 mr-2">•</span>
-                  <span>Long-lasting fragrances that fill your space with divine aroma</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-amber-600 mr-2">•</span>
-                  <span>Made with natural ingredients following traditional methods</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-amber-600 mr-2">•</span>
-                  <span>Available in various sizes to suit your needs</span>
-                </li>
-              </ul>
-              <Button
-                className="bg-amber-600 hover:bg-amber-700 transition-all duration-300 transform hover:scale-105"
-                asChild
-              >
-                <Link href="#products">
-                  Learn More <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-            </motion.div>
-            <motion.div
-              className="lg:w-1/2"
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-            >
-              <Image
-                src="/images/ritual-ceremony.jpeg"
-                alt="Traditional ritual ceremony"
-                width={600}
-                height={400}
-                className="rounded-lg shadow-lg"
-              />
-            </motion.div>
+            <Card className="border-maroon-200 hover:shadow-lg transition-shadow bg-gradient-to-br from-white to-maroon-50">
+              <CardHeader className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-flame-500 to-flame-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Award className="h-8 w-8 text-white" />
+                </div>
+                <CardTitle className="text-maroon-900">Premium Quality</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-maroon-600 text-center">
+                  Crafted with traditional methods to ensure the highest quality and authentic fragrance.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-maroon-200 hover:shadow-lg transition-shadow bg-gradient-to-br from-white to-maroon-50">
+              <CardHeader className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-burgundy-600 to-maroon-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Shield className="h-8 w-8 text-white" />
+                </div>
+                <CardTitle className="text-maroon-900">Trusted Brand</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-maroon-600 text-center">
+                  Years of experience serving devotees with authentic spiritual products.
+                </p>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section id="testimonials" className="py-16 bg-amber-100 relative">
-        <DecorativePattern className="absolute inset-0 text-amber-800" />
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-3xl font-bold text-center text-amber-800 mb-4">What Our Customers Say</h2>
-            <DecorativeDivider />
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-                viewport={{ once: true }}
-              >
-                <TestimonialCard
-                  name="Radha Krishnan"
-                  quote="The fragrance of these agarbathies is truly divine. I use them daily for my morning prayers."
-                  location="Kerala"
-                />
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                viewport={{ once: true }}
-              >
-                <TestimonialCard
-                  name="Lakshmi Devi"
-                  quote="The camphor tablets burn perfectly for our aarti ceremonies. Highly recommended!"
-                  location="Tamil Nadu"
-                />
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                viewport={{ once: true }}
-              >
-                <TestimonialCard
-                  name="Venkat Rao"
-                  quote="I've been using Arathy products for years. The quality is consistently excellent."
-                  location="Karnataka"
-                />
-              </motion.div>
-            </div>
-          </motion.div>
+      <DecorativeDivider />
+
+      {/* Featured Products */}
+      <section className="py-16 px-4 bg-gradient-to-b from-maroon-50 to-burgundy-50">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-maroon-900 mb-4">Featured Products</h2>
+            <p className="text-lg text-maroon-600 max-w-2xl mx-auto">
+              Discover our most popular and highly-rated spiritual products, loved by devotees everywhere.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {featuredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+
+          <div className="text-center mt-12">
+            <Link href="/products">
+              <Button size="lg" className="bg-maroon-700 hover:bg-maroon-800 text-white">
+                View All Products
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* Contact Section - Modified to display plain text */}
-      <section id="contact" className="py-16 bg-amber-800 text-white relative">
-        <DecorativePattern className="absolute inset-0 text-white" />
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="max-w-4xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-3xl font-bold text-center mb-4">Contact Us</h2>
-              <DecorativeDivider className="mb-12" />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div>
-                  <h3 className="text-xl font-semibold mb-4">Get In Touch</h3>
-                  <div className="space-y-4">
-                    <div className="flex items-start">
-                      <Phone className="h-5 w-5 mr-3 mt-1" />
-                      <div>
-                        <p className="font-medium">Phone</p>
-                        <p>+91 98765 43210</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start">
-                      <Mail className="h-5 w-5 mr-3 mt-1" />
-                      <div>
-                        <p className="font-medium">Email</p>
-                        <p>info@arathyproducts.com</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start">
-                      <MapPin className="h-5 w-5 mr-3 mt-1" />
-                      <div>
-                        <p className="font-medium">Address</p>
-                        <p>123 Temple Street, Devotional District</p>
-                        <p>Kerala, India - 682001</p>
-                      </div>
-                    </div>
-                  </div>
+      <DecorativeDivider />
+
+      {/* Testimonials */}
+      <section className="py-16 px-4 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-maroon-900 mb-4">What Our Customers Say</h2>
+            <p className="text-lg text-maroon-600 max-w-2xl mx-auto">
+              Read testimonials from our satisfied customers who have experienced the divine quality of our products.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <TestimonialCard
+              name="Priya Sharma"
+              location="Mumbai"
+              rating={5}
+              comment="The camphor quality is exceptional! It burns cleanly and the fragrance is divine. I've been using Arathy products for years and they never disappoint."
+            />
+            <TestimonialCard
+              name="Rajesh Kumar"
+              location="Delhi"
+              rating={5}
+              comment="Best incense sticks I've ever used. The sandalwood fragrance is authentic and long-lasting. Perfect for daily prayers and meditation."
+            />
+            <TestimonialCard
+              name="Meera Patel"
+              location="Ahmedabad"
+              rating={4}
+              comment="Excellent quality agarbathy. The packaging is good and the products arrive fresh. Highly recommended for all spiritual needs."
+            />
+          </div>
+        </div>
+      </section>
+
+      <DecorativeDivider />
+
+      {/* Contact Section */}
+      <section className="py-16 px-4 bg-gradient-to-b from-maroon-50 to-burgundy-50">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-maroon-900 mb-4">Get in Touch</h2>
+            <p className="text-lg text-maroon-600 max-w-2xl mx-auto">
+              Have questions about our products or need bulk orders? We're here to help you.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <div className="space-y-8">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-maroon-600 to-burgundy-700 rounded-full flex items-center justify-center">
+                  <Phone className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold mb-4">Business Hours</h3>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span>Monday - Friday:</span>
-                      <span>9:00 AM - 6:00 PM</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Saturday:</span>
-                      <span>9:00 AM - 4:00 PM</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Sunday:</span>
-                      <span>Closed</span>
-                    </div>
-                  </div>
-                  <div className="mt-8">
-                    <h3 className="text-xl font-semibold mb-4">Wholesale Inquiries</h3>
-                    <p className="mb-4">
-                      Interested in bulk orders for your store or temple? Contact our wholesale department for special
-                      pricing.
-                    </p>
-                    <p className="font-medium">Wholesale Contact:</p>
-                    <p>wholesale@arathyproducts.com</p>
-                    <p>+91 98765 43211</p>
-                  </div>
+                  <h3 className="font-semibold text-maroon-900 mb-2">Phone</h3>
+                  <p className="text-maroon-600">+91 7907417217</p>
+                  <p className="text-maroon-600">+91 9947362795</p>
                 </div>
               </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
 
-      {/* Admin Login Button Section */}
-      <section className="py-8 bg-amber-50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-center">
-            <Button size="lg" className="bg-amber-600 hover:bg-amber-700" asChild>
-              <Link href="/admin/login">
-                <Lock className="h-5 w-5 mr-2" /> Admin Login
-              </Link>
-            </Button>
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-flame-500 to-flame-600 rounded-full flex items-center justify-center">
+                  <Mail className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-maroon-900 mb-2">Email</h3>
+                  <p className="text-maroon-600">info@arathycamphor.com</p>
+                  <p className="text-maroon-600">orders@arathycamphor.com</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-burgundy-600 to-maroon-700 rounded-full flex items-center justify-center">
+                  <MapPin className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-maroon-900 mb-2">Address</h3>
+                  <p className="text-maroon-600">
+                    Holy Maries Convent Road
+                    <br />
+                    Kumbalam PO, Ernakulam
+                    <br />
+                    Kerala, India - 682506
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-maroon-600 to-burgundy-700 rounded-full flex items-center justify-center">
+                  <Clock className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-maroon-900 mb-2">Business Hours</h3>
+                  <p className="text-maroon-600">Monday - Saturday: 9:00 AM - 7:00 PM</p>
+                  <p className="text-maroon-600">Sunday: 10:00 AM - 5:00 PM</p>
+                </div>
+              </div>
+            </div>
+
+            <EnquiryForm />
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-amber-900 text-white py-8">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="mb-4 md:mb-0">
-              <h3 className="text-xl font-bold">Arathy Camphor & Arathy Agarbathy</h3>
-              <p className="text-white/70">A product of Jyothys Enterprises</p>
+      <footer className="bg-gradient-to-r from-maroon-900 via-burgundy-900 to-maroon-900 text-white py-12 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+              <div className="flex items-center space-x-3 mb-4">
+                <img src="/images/arathy-logo.jpg" alt="Arathy Logo" className="h-10 w-auto rounded-md" />
+                <div>
+                  <h3 className="font-bold text-lg">Arathy Camphor</h3>
+                  <p className="text-sm text-flame-200">& Agarbathy</p>
+                </div>
+              </div>
+              <p className="text-maroon-200 text-sm">Bringing divine fragrance to your spiritual journey.</p>
             </div>
-            <div className="text-center md:text-right">
-              <p className="text-white/70">© {new Date().getFullYear()} Jyothys Enterprises. All rights reserved.</p>
+
+            <div>
+              <h4 className="font-semibold mb-4">Quick Links</h4>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <Link href="/" className="text-maroon-200 hover:text-white transition-colors">
+                    Home
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/products" className="text-maroon-200 hover:text-white transition-colors">
+                    Products
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/about" className="text-maroon-200 hover:text-white transition-colors">
+                    About Us
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/contact" className="text-maroon-200 hover:text-white transition-colors">
+                    Contact
+                  </Link>
+                </li>
+              </ul>
             </div>
+
+            <div>
+              <h4 className="font-semibold mb-4">Categories</h4>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <span className="text-maroon-200">Camphor</span>
+                </li>
+                <li>
+                  <span className="text-maroon-200">Incense Sticks</span>
+                </li>
+                <li>
+                  <span className="text-maroon-200">Agarbathy</span>
+                </li>
+                <li>
+                  <span className="text-maroon-200">Dhoop</span>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-4">Contact Info</h4>
+              <div className="space-y-2 text-sm">
+                <p className="text-maroon-200">+91 7907417217</p>
+                <p className="text-maroon-200">+91 9947362795</p>
+                <p className="text-maroon-200">info@arathycamphor.com</p>
+                <p className="text-maroon-200">Holy Maries Convent Road</p>
+                <p className="text-maroon-200">Kumbalam PO, Ernakulam</p>
+                <p className="text-maroon-200">Kerala, India - 682506</p>
+              </div>
+            </div>
+          </div>
+
+          <DecorativeDivider className="py-8" />
+
+          <div className="text-center text-sm text-maroon-200">
+            <p>&copy; 2024 Arathy Camphor & Agarbathy. All rights reserved.</p>
           </div>
         </div>
       </footer>
-    </main>
+    </div>
   )
 }

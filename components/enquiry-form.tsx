@@ -1,122 +1,180 @@
 "use client"
 
-import { CardContent } from "@/components/ui/card"
-
-import { Card } from "@/components/ui/card"
-
 import type React from "react"
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
-import { Loader2 } from "lucide-react"
+import { Send, Phone, Mail, MessageCircle } from "lucide-react"
 
-interface EnquiryFormProps {
-  productName?: string
-}
-
-export default function EnquiryForm({ productName }: EnquiryFormProps) {
+export default function EnquiryForm() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    subject: "",
+    message: "",
+    enquiryType: "",
+  })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { toast } = useToast()
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
 
     // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    await new Promise((resolve) => setTimeout(resolve, 1000))
 
-    setIsSubmitting(false)
     toast({
-      title: "Enquiry Submitted",
-      description: "We've received your enquiry and will get back to you soon.",
+      title: "Enquiry Sent Successfully!",
+      description: "We'll get back to you within 24 hours.",
     })
 
-    // Reset form
-    e.currentTarget.reset()
+    setFormData({
+      name: "",
+      email: "",
+      phone: "",
+      subject: "",
+      message: "",
+      enquiryType: "",
+    })
+    setIsSubmitting(false)
+  }
+
+  const handleChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
   return (
-    <Card className="bg-white border border-amber-200">
+    <Card className="border-maroon-200 shadow-lg">
+      <CardHeader className="bg-gradient-to-r from-maroon-700 to-burgundy-800 text-white rounded-t-lg">
+        <CardTitle className="flex items-center gap-2">
+          <MessageCircle className="h-5 w-5" />
+          Send us an Enquiry
+        </CardTitle>
+      </CardHeader>
       <CardContent className="p-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label htmlFor="name" className="text-sm font-medium text-amber-900">
-                Your Name <span className="text-red-500">*</span>
-              </label>
+            <div>
+              <Label htmlFor="name" className="text-maroon-900">
+                Full Name *
+              </Label>
               <Input
                 id="name"
-                name="name"
+                value={formData.name}
+                onChange={(e) => handleChange("name", e.target.value)}
+                placeholder="Enter your full name"
                 required
-                className="border-amber-200 focus:border-amber-500 focus:ring-amber-500"
+                className="border-maroon-200 focus:border-maroon-400"
               />
             </div>
-            <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium text-amber-900">
-                Email Address <span className="text-red-500">*</span>
-              </label>
+            <div>
+              <Label htmlFor="email" className="text-maroon-900">
+                Email Address *
+              </Label>
               <Input
                 id="email"
-                name="email"
                 type="email"
+                value={formData.email}
+                onChange={(e) => handleChange("email", e.target.value)}
+                placeholder="Enter your email"
                 required
-                className="border-amber-200 focus:border-amber-500 focus:ring-amber-500"
+                className="border-maroon-200 focus:border-maroon-400"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label htmlFor="phone" className="text-sm font-medium text-amber-900">
+            <div>
+              <Label htmlFor="phone" className="text-maroon-900">
                 Phone Number
-              </label>
-              <Input id="phone" name="phone" className="border-amber-200 focus:border-amber-500 focus:ring-amber-500" />
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="product" className="text-sm font-medium text-amber-900">
-                Product
-              </label>
+              </Label>
               <Input
-                id="product"
-                name="product"
-                defaultValue={productName}
-                readOnly={!!productName}
-                className="border-amber-200 focus:border-amber-500 focus:ring-amber-500 bg-amber-50"
+                id="phone"
+                value={formData.phone}
+                onChange={(e) => handleChange("phone", e.target.value)}
+                placeholder="+91 98765 43210"
+                className="border-maroon-200 focus:border-maroon-400"
               />
+            </div>
+            <div>
+              <Label htmlFor="enquiryType" className="text-maroon-900">
+                Enquiry Type
+              </Label>
+              <Select value={formData.enquiryType} onValueChange={(value) => handleChange("enquiryType", value)}>
+                <SelectTrigger className="border-maroon-200 focus:border-maroon-400">
+                  <SelectValue placeholder="Select enquiry type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="product">Product Information</SelectItem>
+                  <SelectItem value="bulk">Bulk Orders</SelectItem>
+                  <SelectItem value="wholesale">Wholesale Enquiry</SelectItem>
+                  <SelectItem value="support">Customer Support</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label htmlFor="message" className="text-sm font-medium text-amber-900">
-              Your Message <span className="text-red-500">*</span>
-            </label>
-            <Textarea
-              id="message"
-              name="message"
+          <div>
+            <Label htmlFor="subject" className="text-maroon-900">
+              Subject *
+            </Label>
+            <Input
+              id="subject"
+              value={formData.subject}
+              onChange={(e) => handleChange("subject", e.target.value)}
+              placeholder="Brief subject of your enquiry"
               required
-              rows={5}
-              className="border-amber-200 focus:border-amber-500 focus:ring-amber-500"
-              placeholder="Please let us know what you'd like to enquire about..."
+              className="border-maroon-200 focus:border-maroon-400"
             />
           </div>
 
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full bg-amber-600 hover:bg-amber-700 transition-all duration-300"
-          >
+          <div>
+            <Label htmlFor="message" className="text-maroon-900">
+              Message *
+            </Label>
+            <Textarea
+              id="message"
+              value={formData.message}
+              onChange={(e) => handleChange("message", e.target.value)}
+              placeholder="Please describe your enquiry in detail..."
+              rows={4}
+              required
+              className="border-maroon-200 focus:border-maroon-400"
+            />
+          </div>
+
+          <Button type="submit" disabled={isSubmitting} className="w-full bg-maroon-700 hover:bg-maroon-800 text-white">
             {isSubmitting ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...
-              </>
+              "Sending..."
             ) : (
-              "Submit Enquiry"
+              <>
+                <Send className="h-4 w-4 mr-2" />
+                Send Enquiry
+              </>
             )}
           </Button>
         </form>
+
+        <div className="mt-6 pt-6 border-t border-maroon-200">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div className="flex items-center gap-2 text-maroon-700">
+              <Phone className="h-4 w-4" />
+              <span>+91 7907417217   </div>
+            <div className="flex items-center gap-2 text-maroon-700">
+              <Mail className="h-4 w-4" />
+              <span>info@arathycamphor.com</span>
+            </div>
+          </div>
+        </div>
       </CardContent>
     </Card>
   )

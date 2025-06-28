@@ -1,17 +1,28 @@
-export default function DecorativePattern({ className = "" }: { className?: string }) {
+import { cn } from "@/lib/utils"
+
+interface DecorativePatternProps {
+  className?: string
+}
+
+export default function DecorativePattern({ className }: DecorativePatternProps) {
   return (
-    <div className={`relative overflow-hidden ${className}`}>
-      <div className="absolute inset-0 opacity-10">
-        <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
-          <pattern id="devotional-pattern" width="10" height="10" patternUnits="userSpaceOnUse">
-            <path
-              d="M10 0H0V10H10V0ZM7 5C7 6.10457 6.10457 7 5 7C3.89543 7 3 6.10457 3 5C3 3.89543 3.89543 3 5 3C6.10457 3 7 3.89543 7 5Z"
-              fill="currentColor"
-            />
-          </pattern>
-          <rect width="100%" height="100%" fill="url(#devotional-pattern)" />
-        </svg>
-      </div>
-    </div>
+    <svg viewBox="0 0 100 100" className={cn("w-16 h-16", className)} fill="currentColor">
+      {/* Lotus-inspired pattern */}
+      <g transform="translate(50,50)">
+        {/* Center flame/drop */}
+        <path d="M0,-20 C-8,-15 -8,-5 0,0 C8,-5 8,-15 0,-20 Z" className="fill-flame-500" />
+
+        {/* Petals */}
+        {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => (
+          <g key={i} transform={`rotate(${angle})`}>
+            <path d="M0,-15 C-5,-20 -5,-25 0,-30 C5,-25 5,-20 0,-15 Z" className="fill-current opacity-60" />
+          </g>
+        ))}
+
+        {/* Inner circle */}
+        <circle r="8" className="fill-maroon-600 opacity-80" />
+        <circle r="4" className="fill-flame-400" />
+      </g>
+    </svg>
   )
 }
