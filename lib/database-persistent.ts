@@ -6,7 +6,7 @@ export interface Product {
   stock: number
   category: string
   sku: string
-  images: string[]
+  image?: string
   createdAt: Date
   updatedAt: Date
 }
@@ -73,7 +73,6 @@ class Database {
   private readonly CUSTOMERS_KEY = "arathy_customers"
   private readonly CATEGORIES_KEY = "arathy_categories"
   private readonly REPORTS_KEY = "arathy_reports"
-  private readonly AUTH_KEY = "arathy_admin_auth"
 
   constructor() {
     this.initializeData()
@@ -82,68 +81,66 @@ class Database {
   private initializeData() {
     if (typeof window === "undefined") return
 
-    // Initialize products with multiple images
+    // Initialize products
     if (!localStorage.getItem(this.PRODUCTS_KEY)) {
       const sampleProducts: Product[] = [
         {
           id: "1",
           name: "Premium Camphor Tablets",
-          description:
-            "Pure, natural camphor tablets made from the finest camphor crystals. Perfect for daily prayers and spiritual ceremonies.",
+          description: "Pure, natural camphor tablets made from the finest camphor crystals.",
           price: 150,
           stock: 50,
           category: "Camphor",
           sku: "CAM001",
-          images: ["/images/camphor-1.jpeg", "/images/camphor-2.jpeg"],
+          image: "/images/camphor-1.jpeg",
           createdAt: new Date(),
           updatedAt: new Date(),
         },
         {
           id: "2",
           name: "Sacred Incense Sticks",
-          description: "Handcrafted incense sticks with traditional fragrances. Made from natural ingredients.",
+          description: "Handcrafted incense sticks with traditional fragrances.",
           price: 80,
           stock: 8,
           category: "Incense",
           sku: "INC001",
-          images: ["/images/incense-sticks.jpeg", "/images/incense-burning.jpeg"],
+          image: "/images/incense-sticks.jpeg",
           createdAt: new Date(),
           updatedAt: new Date(),
         },
         {
           id: "3",
           name: "Divine Agarbathy Collection",
-          description: "Premium agarbathy sticks with authentic Indian fragrances. Long-lasting and aromatic.",
+          description: "Premium agarbathy sticks with authentic Indian fragrances.",
           price: 120,
           stock: 25,
           category: "Agarbathy",
           sku: "AGA001",
-          images: ["/images/incense-burning.jpeg", "/images/incense-sticks-new.jpeg"],
+          image: "/images/incense-burning.jpeg",
           createdAt: new Date(),
           updatedAt: new Date(),
         },
         {
           id: "4",
           name: "Temple Grade Camphor",
-          description:
-            "Highest quality camphor specially prepared for temple use. Burns cleanly with divine fragrance.",
+          description: "Highest quality camphor specially prepared for temple use.",
           price: 250,
           stock: 0,
           category: "Camphor",
           sku: "CAM002",
-          images: ["/images/camphor-2.jpeg", "/images/camphor-3.jpeg"],
+          image: "/images/camphor-2.jpeg",
           createdAt: new Date(),
           updatedAt: new Date(),
         },
         {
           id: "5",
           name: "Dhoop Cone Collection",
-          description: "Aromatic dhoop cones made from natural herbs and resins. Perfect for meditation.",
+          description: "Aromatic dhoop cones made from natural herbs and resins.",
           price: 90,
           stock: 15,
           category: "Dhoop",
           sku: "DHO001",
-          images: ["/images/ritual-fire.jpeg", "/images/ceremony-flames.jpeg"],
+          image: "/images/ritual-fire.jpeg",
           createdAt: new Date(),
           updatedAt: new Date(),
         },
@@ -218,20 +215,6 @@ class Database {
           createdAt: new Date(Date.now() - 43200000),
           updatedAt: new Date(Date.now() - 43200000),
         },
-        {
-          id: "3",
-          customerName: "Meera Patel",
-          customerEmail: "meera@example.com",
-          customerPhone: "+91 76543 21098",
-          items: [
-            { productId: "5", productName: "Dhoop Cone Collection", quantity: 4, price: 90 },
-            { productId: "1", productName: "Premium Camphor Tablets", quantity: 1, price: 150 },
-          ],
-          total: 510,
-          status: "pending",
-          createdAt: new Date(Date.now() - 21600000),
-          updatedAt: new Date(Date.now() - 21600000),
-        },
       ]
       localStorage.setItem(this.ORDERS_KEY, JSON.stringify(sampleOrders))
     }
@@ -261,36 +244,9 @@ class Database {
           createdAt: new Date(Date.now() - 1728000000),
           lastOrderDate: new Date(Date.now() - 43200000),
         },
-        {
-          id: "3",
-          name: "Meera Patel",
-          email: "meera@example.com",
-          phone: "+91 76543 21098",
-          address: "789 Divine Avenue, Ahmedabad, Gujarat 380001",
-          totalOrders: 2,
-          totalSpent: 650,
-          createdAt: new Date(Date.now() - 1296000000),
-          lastOrderDate: new Date(Date.now() - 21600000),
-        },
       ]
       localStorage.setItem(this.CUSTOMERS_KEY, JSON.stringify(sampleCustomers))
     }
-  }
-
-  // Authentication methods
-  setAuthSession(authenticated: boolean) {
-    if (typeof window === "undefined") return
-    localStorage.setItem(this.AUTH_KEY, authenticated.toString())
-  }
-
-  isAuthenticated(): boolean {
-    if (typeof window === "undefined") return false
-    return localStorage.getItem(this.AUTH_KEY) === "true"
-  }
-
-  clearAuthSession() {
-    if (typeof window === "undefined") return
-    localStorage.removeItem(this.AUTH_KEY)
   }
 
   // Product methods
@@ -300,7 +256,6 @@ class Database {
     if (!data) return []
     return JSON.parse(data).map((p: any) => ({
       ...p,
-      images: p.images || (p.image ? [p.image] : []), // Handle backward compatibility
       createdAt: new Date(p.createdAt),
       updatedAt: new Date(p.updatedAt),
     }))
@@ -487,14 +442,6 @@ class Database {
     }
     localStorage.setItem(this.ORDERS_KEY, JSON.stringify(orders))
     return orders[index]
-  }
-
-  deleteOrder(id: string): boolean {
-    const orders = this.getAllOrders()
-    const filteredOrders = orders.filter((o) => o.id !== id)
-    if (filteredOrders.length === orders.length) return false
-    localStorage.setItem(this.ORDERS_KEY, JSON.stringify(filteredOrders))
-    return true
   }
 
   // Customer methods

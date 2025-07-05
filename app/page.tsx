@@ -46,9 +46,10 @@ export default function HomePage() {
           <DecorativePattern className="absolute -top-10 -left-10 w-20 h-20 text-flame-300/30" />
           <DecorativePattern className="absolute -bottom-10 -right-10 w-20 h-20 text-flame-300/30" />
 
-          <Badge className="mb-6 bg-maroon-600/90 text-white border-maroon-500">
-            Premium Quality Spiritual Products
-          </Badge>
+          {/* Logo in Hero */}
+          
+
+          <Badge className="mb-6 bg-maroon-600/90 text-white border-maroon-500">Premium Quality Since 1985</Badge>
 
           <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white">
             Divine Fragrance
@@ -115,7 +116,7 @@ export default function HomePage() {
               </CardHeader>
               <CardContent>
                 <p className="text-maroon-600 text-center">
-                  Crafted with traditional methods to ensure the highest quality and authentic fragrance.
+                  crafted with traditional methods to ensure the highest quality and authentic fragrance.
                 </p>
               </CardContent>
             </Card>
@@ -129,7 +130,7 @@ export default function HomePage() {
               </CardHeader>
               <CardContent>
                 <p className="text-maroon-600 text-center">
-                  Years of experience serving devotees with authentic spiritual products.
+                  years of experience serving devotees with authentic spiritual products.
                 </p>
               </CardContent>
             </Card>
@@ -221,8 +222,8 @@ export default function HomePage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-maroon-900 mb-2">Phone</h3>
-                  <p className="text-maroon-600">+91 7907417217</p>
-                  <p className="text-maroon-600">+91 9947362795</p>
+                  <p className="text-maroon-600">+91 7907417217 </p>
+                  <p className="text-maroon-600">+91 9947362795  </p>
                 </div>
               </div>
 
@@ -244,11 +245,11 @@ export default function HomePage() {
                 <div>
                   <h3 className="font-semibold text-maroon-900 mb-2">Address</h3>
                   <p className="text-maroon-600">
-                    Holy Maries Convent Road
+                    123 Temple Street
                     <br />
-                    Kumbalam PO, Ernakulam
+                    Sacred Gardens, Mumbai
                     <br />
-                    Kerala, India - 682506
+                    Maharashtra 400001, India
                   </p>
                 </div>
               </div>
@@ -282,7 +283,7 @@ export default function HomePage() {
                   <p className="text-sm text-flame-200">& Agarbathy</p>
                 </div>
               </div>
-              <p className="text-maroon-200 text-sm">Bringing divine fragrance to your spiritual journey.</p>
+              <p className="text-maroon-200 text-sm">Bringing divine fragrance to your spiritual journey since 1985.</p>
             </div>
 
             <div>
@@ -330,14 +331,11 @@ export default function HomePage() {
             </div>
 
             <div>
-              <h4 className="font-semibold mb-4">Contact Info</h4>
+              <h4 className="font-semibold mb-4">Connect</h4>
               <div className="space-y-2 text-sm">
-                <p className="text-maroon-200">+91 7907417217</p>
-                <p className="text-maroon-200">+91 9947362795</p>
+                <p className="text-maroon-200">+91 98765 43210</p>
                 <p className="text-maroon-200">info@arathycamphor.com</p>
-                <p className="text-maroon-200">Holy Maries Convent Road</p>
-                <p className="text-maroon-200">Kumbalam PO, Ernakulam</p>
-                <p className="text-maroon-200">Kerala, India - 682506</p>
+                <p className="text-maroon-200">Mumbai, Maharashtra</p>
               </div>
             </div>
           </div>

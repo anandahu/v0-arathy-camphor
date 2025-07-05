@@ -39,7 +39,7 @@ export default function ContactPage() {
                 <CardTitle className="text-amber-900">Call Us</CardTitle>
               </CardHeader>
               <CardContent className="text-center space-y-2">
-                <p className="text-lg font-semibold text-amber-900">+91 7907417217</p>
+                <p className="text-lg font-semibold text-amber-900">+91 98765 43210</p>
                 <p className="text-amber-700">Mon - Sat: 9:00 AM - 7:00 PM</p>
                 <p className="text-amber-700">Sunday: 10:00 AM - 5:00 PM</p>
               </CardContent>
@@ -67,13 +67,11 @@ export default function ContactPage() {
                 <CardTitle className="text-amber-900">Visit Us</CardTitle>
               </CardHeader>
               <CardContent className="text-center space-y-2">
-                <p className="text-lg font-semibold text-amber-900"><br></p>
-                <p className="text-amber-700">Holy Maries Convent Road
-Kumbalam PO, Ernakulam
-Kerala, India - 682506</p>
-                
+                <p className="text-lg font-semibold text-amber-900">123 Temple Street</p>
+                <p className="text-amber-700">Sacred City, India 560001</p>
+                <p className="text-amber-700">Near Ancient Temple</p>
               </CardContent>
-<br>
+            </Card>
           </div>
         </section>
 
@@ -156,9 +154,8 @@ Kerala, India - 682506</p>
                 <CardContent>
                   <div className="bg-amber-50 h-48 rounded-lg flex items-center justify-center border border-amber-200">
                     <div className="text-center">
-                      <MapPin className="h-12 w-12 text-ambeHoly Maries Convent Road Kumbalam PO, Ernakulam Kerala, India - 682506
-
-               <p className="text-amber-700">Interactive Map</p>
+                      <MapPin className="h-12 w-12 text-amber-400 mx-auto mb-2" />
+                      <p className="text-amber-700">Interactive Map</p>
                       <p className="text-sm text-amber-600">123 Temple Street, Sacred City</p>
                     </div>
                   </div>

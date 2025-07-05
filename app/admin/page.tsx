@@ -1,269 +1,193 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import AdminLayout from "@/components/admin/admin-layout"
 import AdminAuth from "@/components/admin/admin-auth"
+import AdminLayout from "@/components/admin/admin-layout"
+import ProductManagement from "@/components/admin/product-management"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Package, ShoppingCart, Users, AlertTriangle, Plus, Eye, FileText, DollarSign } from "lucide-react"
-import { database } from "@/lib/database-persistent"
-import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Package, DollarSign, AlertTriangle, TrendingUp, Users, ShoppingCart, Eye, Plus } from "lucide-react"
+import { database, type ProductStats } from "@/lib/database-persistent"
 
-export default function AdminDashboard() {
+export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [stats, setStats] = useState({
+  const [stats, setStats] = useState<ProductStats>({
     totalProducts: 0,
-    totalOrders: 0,
-    totalCustomers: 0,
-    totalRevenue: 0,
-    lowStockProducts: 0,
-    outOfStockProducts: 0,
+    totalValue: 0,
+    lowStockCount: 0,
+    outOfStockCount: 0,
+    categories: [],
   })
-  const [recentOrders, setRecentOrders] = useState<any[]>([])
   const [lowStockProducts, setLowStockProducts] = useState<any[]>([])
 
   useEffect(() => {
-    if (database.isAuthenticated()) {
-      setIsAuthenticated(true)
-      loadDashboardData()
+    if (isAuthenticated) {
+      loadStats()
     }
-  }, [])
+  }, [isAuthenticated])
 
-  const loadDashboardData = () => {
-    const products = database.getAllProducts()
-    const orders = database.getAllOrders()
-    const customers = database.getAllCustomers()
-    const lowStock = database.getLowStockProducts()
-    const outOfStock = database.getOutOfStockProducts()
-
-    const totalRevenue = orders
-      .filter((order) => order.status === "completed")
-      .reduce((sum, order) => sum + order.total, 0)
-
-    setStats({
-      totalProducts: products.length,
-      totalOrders: orders.length,
-      totalCustomers: customers.length,
-      totalRevenue,
-      lowStockProducts: lowStock.length,
-      outOfStockProducts: outOfStock.length,
-    })
-
-    setRecentOrders(orders.slice(0, 5))
-    setLowStockProducts(lowStock.slice(0, 5))
-  }
-
-  const handleAuthenticated = () => {
-    setIsAuthenticated(true)
-    loadDashboardData()
+  const loadStats = () => {
+    const productStats = database.getProductStats()
+    setStats(productStats)
+    setLowStockProducts(database.getLowStockProducts())
   }
 
   if (!isAuthenticated) {
-    return <AdminAuth onAuthenticated={handleAuthenticated} />
+    return <AdminAuth onAuthenticated={() => setIsAuthenticated(true)} />
   }
 
   return (
     <AdminLayout>
       <div className="p-6 space-y-6">
-        {/* Header */}
+        {/* Welcome Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-maroon-900">Dashboard</h1>
-            <p className="text-maroon-600">Welcome to your admin panel</p>
+            <h1 className="text-3xl font-bold text-amber-900">Dashboard</h1>
+            <p className="text-amber-700">Welcome to Arathy Camphor & Agarbathy Admin Panel</p>
           </div>
-          <div className="text-sm text-maroon-600">Last updated: {new Date().toLocaleString()}</div>
+          <Button className="bg-amber-600 hover:bg-amber-700 text-white">
+            <Plus className="h-4 w-4 mr-2" />
+            Quick Add Product
+          </Button>
         </div>
 
-        {/* Stats Cards */}
+        {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="border-maroon-200 card-hover">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-maroon-600">Total Products</CardTitle>
-              <Package className="h-4 w-4 text-maroon-500" />
+          <Card className="border-amber-200">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-amber-900">Total Products</CardTitle>
+              <Package className="h-4 w-4 text-amber-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-maroon-900">{stats.totalProducts}</div>
-              <p className="text-xs text-maroon-600">Active inventory items</p>
+              <div className="text-2xl font-bold text-amber-900">{stats.totalProducts}</div>
+              <p className="text-xs text-amber-600">{stats.categories.length} categories</p>
             </CardContent>
           </Card>
 
-          <Card className="border-maroon-200 card-hover">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-maroon-600">Total Orders</CardTitle>
-              <ShoppingCart className="h-4 w-4 text-maroon-500" />
+          <Card className="border-amber-200">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-amber-900">Inventory Value</CardTitle>
+              <DollarSign className="h-4 w-4 text-green-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-maroon-900">{stats.totalOrders}</div>
-              <p className="text-xs text-maroon-600">All time orders</p>
+              <div className="text-2xl font-bold text-amber-900">₹{stats.totalValue.toLocaleString()}</div>
+              <p className="text-xs text-green-600">+12% from last month</p>
             </CardContent>
           </Card>
 
-          <Card className="border-maroon-200 card-hover">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-maroon-600">Total Customers</CardTitle>
-              <Users className="h-4 w-4 text-maroon-500" />
+          <Card className="border-amber-200">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-amber-900">Low Stock Items</CardTitle>
+              <AlertTriangle className="h-4 w-4 text-orange-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-maroon-900">{stats.totalCustomers}</div>
-              <p className="text-xs text-maroon-600">Registered customers</p>
+              <div className="text-2xl font-bold text-orange-600">{stats.lowStockCount}</div>
+              <p className="text-xs text-orange-600">Requires attention</p>
             </CardContent>
           </Card>
 
-          <Card className="border-maroon-200 card-hover">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-maroon-600">Total Revenue</CardTitle>
-              <DollarSign className="h-4 w-4 text-green-500" />
+          <Card className="border-amber-200">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-amber-900">Out of Stock</CardTitle>
+              <TrendingUp className="h-4 w-4 text-red-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-maroon-900">₹{stats.totalRevenue.toLocaleString()}</div>
-              <p className="text-xs text-maroon-600">From completed orders</p>
+              <div className="text-2xl font-bold text-red-600">{stats.outOfStockCount}</div>
+              <p className="text-xs text-red-600">Needs restocking</p>
             </CardContent>
           </Card>
         </div>
-
-        {/* Alerts */}
-        {(stats.lowStockProducts > 0 || stats.outOfStockProducts > 0) && (
-          <div className="space-y-4">
-            {stats.outOfStockProducts > 0 && (
-              <Alert className="border-red-200 bg-red-50">
-                <AlertTriangle className="h-4 w-4 text-red-600" />
-                <AlertDescription className="text-red-800">
-                  <strong>{stats.outOfStockProducts}</strong> products are out of stock and need restocking.
-                  <Link href="/admin/products" className="ml-2 underline">
-                    View Products
-                  </Link>
-                </AlertDescription>
-              </Alert>
-            )}
-            {stats.lowStockProducts > 0 && (
-              <Alert className="border-flame-200 bg-flame-50">
-                <AlertTriangle className="h-4 w-4 text-flame-600" />
-                <AlertDescription className="text-flame-800">
-                  <strong>{stats.lowStockProducts}</strong> products are running low on stock.
-                  <Link href="/admin/products" className="ml-2 underline">
-                    View Products
-                  </Link>
-                </AlertDescription>
-              </Alert>
-            )}
-          </div>
-        )}
 
         {/* Quick Actions */}
-        <Card className="border-maroon-200">
-          <CardHeader>
-            <CardTitle className="text-maroon-900">Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Link href="/admin/products">
-                <Button className="w-full h-16 flex flex-col items-center justify-center bg-maroon-600 hover:bg-maroon-700 text-white">
-                  <Plus className="h-5 w-5 mb-1" />
-                  Add Product
-                </Button>
-              </Link>
-              <Link href="/admin/orders">
-                <Button className="w-full h-16 flex flex-col items-center justify-center bg-burgundy-600 hover:bg-burgundy-700 text-white">
-                  <Eye className="h-5 w-5 mb-1" />
-                  View Orders
-                </Button>
-              </Link>
-              <Link href="/admin/customers">
-                <Button className="w-full h-16 flex flex-col items-center justify-center bg-flame-600 hover:bg-flame-700 text-white">
-                  <Users className="h-5 w-5 mb-1" />
-                  Manage Customers
-                </Button>
-              </Link>
-              <Link href="/admin/reports">
-                <Button className="w-full h-16 flex flex-col items-center justify-center bg-maroon-600 hover:bg-maroon-700 text-white">
-                  <FileText className="h-5 w-5 mb-1" />
-                  Generate Reports
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Recent Activity */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Recent Orders */}
-          <Card className="border-maroon-200">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <Card className="border-amber-200">
             <CardHeader>
-              <CardTitle className="text-maroon-900">Recent Orders</CardTitle>
+              <CardTitle className="text-amber-900 flex items-center gap-2">
+                <Package className="h-5 w-5" />
+                Quick Actions
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Button
+                variant="outline"
+                className="w-full justify-start border-amber-200 text-amber-700 hover:bg-amber-50 bg-transparent"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add New Product
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full justify-start border-amber-200 text-amber-700 hover:bg-amber-50 bg-transparent"
+              >
+                <Users className="h-4 w-4 mr-2" />
+                Manage Categories
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full justify-start border-amber-200 text-amber-700 hover:bg-amber-50 bg-transparent"
+              >
+                <ShoppingCart className="h-4 w-4 mr-2" />
+                View Orders
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border-amber-200">
+            <CardHeader>
+              <CardTitle className="text-amber-900">Category Distribution</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {recentOrders.length > 0 ? (
-                  recentOrders.map((order) => (
-                    <div key={order.id} className="flex items-center justify-between p-3 bg-maroon-50 rounded-lg">
-                      <div>
-                        <p className="font-medium text-maroon-900">{order.customerName}</p>
-                        <p className="text-sm text-maroon-600">₹{order.total}</p>
-                      </div>
-                      <Badge
-                        variant={
-                          order.status === "completed"
-                            ? "default"
-                            : order.status === "processing"
-                              ? "secondary"
-                              : "destructive"
-                        }
-                      >
-                        {order.status}
-                      </Badge>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-maroon-600 text-center py-4">No recent orders</p>
-                )}
-                <Link href="/admin/orders">
-                  <Button
-                    variant="outline"
-                    className="w-full border-maroon-200 text-maroon-700 hover:bg-maroon-50 bg-transparent"
-                  >
-                    View All Orders
-                  </Button>
-                </Link>
+              <div className="space-y-3">
+                {stats.categories.map((category) => (
+                  <div key={category} className="flex items-center justify-between">
+                    <span className="text-amber-700">{category}</span>
+                    <Badge variant="outline" className="border-amber-300 text-amber-700">
+                      {database.getProductsByCategory(category).length}
+                    </Badge>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
 
-          {/* Low Stock Products */}
-          <Card className="border-maroon-200">
+          <Card className="border-amber-200">
             <CardHeader>
-              <CardTitle className="text-maroon-900">Low Stock Alert</CardTitle>
+              <CardTitle className="text-amber-900 flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5 text-orange-600" />
+                Low Stock Alert
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {lowStockProducts.length > 0 ? (
-                  lowStockProducts.map((product) => (
-                    <div key={product.id} className="flex items-center justify-between p-3 bg-flame-50 rounded-lg">
-                      <div>
-                        <p className="font-medium text-maroon-900">{product.name}</p>
-                        <p className="text-sm text-maroon-600">SKU: {product.sku}</p>
-                      </div>
-                      <Badge variant="secondary" className="bg-flame-100 text-flame-800">
-                        {product.stock} left
-                      </Badge>
+              <div className="space-y-3">
+                {lowStockProducts.slice(0, 3).map((product) => (
+                  <div key={product.id} className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-amber-900 line-clamp-1">{product.name}</p>
+                      <p className="text-xs text-amber-600">Stock: {product.stock}</p>
                     </div>
-                  ))
-                ) : (
-                  <p className="text-maroon-600 text-center py-4">No low stock items</p>
+                    <Button size="sm" variant="outline" className="border-amber-200 text-amber-700 bg-transparent">
+                      <Eye className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ))}
+                {lowStockProducts.length === 0 && (
+                  <p className="text-sm text-amber-600">All products are well stocked!</p>
                 )}
-                <Link href="/admin/products">
-                  <Button
-                    variant="outline"
-                    className="w-full border-maroon-200 text-maroon-700 hover:bg-maroon-50 bg-transparent"
-                  >
-                    Manage Inventory
-                  </Button>
-                </Link>
               </div>
             </CardContent>
           </Card>
         </div>
+
+        {/* Product Management Section */}
+        <Card className="border-amber-200">
+          <CardHeader>
+            <CardTitle className="text-amber-900">Product Management</CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <ProductManagement />
+          </CardContent>
+        </Card>
       </div>
     </AdminLayout>
   )

@@ -37,7 +37,7 @@ export default function AboutPage() {
               <h2 className="text-3xl font-bold text-amber-900 mb-6">Our Story</h2>
               <div className="space-y-4 text-amber-700">
                 <p>
-                  Founded in 2019 by a family passionate about preserving traditional spiritual practices, Arathy began
+                  Founded in 1985 by a family passionate about preserving traditional spiritual practices, Arathy began
                   as a small workshop dedicated to creating authentic camphor and incense products.
                 </p>
                 <p>

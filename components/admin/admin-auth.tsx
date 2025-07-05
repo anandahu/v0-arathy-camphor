@@ -2,14 +2,13 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
 import { Lock, Eye, EyeOff, Shield } from "lucide-react"
-import { database } from "@/lib/database-persistent"
 
 interface AdminAuthProps {
   onAuthenticated: () => void
@@ -23,13 +22,6 @@ export default function AdminAuth({ onAuthenticated }: AdminAuthProps) {
 
   const validPasswords = ["arathy2024", "admin123", "camphor@admin"]
 
-  // Check if already authenticated on component mount
-  useEffect(() => {
-    if (database.isAuthenticated()) {
-      onAuthenticated()
-    }
-  }, [onAuthenticated])
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
@@ -38,7 +30,6 @@ export default function AdminAuth({ onAuthenticated }: AdminAuthProps) {
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
     if (validPasswords.includes(password)) {
-      database.setAuthSession(true)
       toast({
         title: "Authentication Successful",
         description: "Welcome to Arathy Admin Panel",
@@ -115,10 +106,7 @@ export default function AdminAuth({ onAuthenticated }: AdminAuthProps) {
                 className="w-full bg-maroon-700 hover:bg-maroon-800 text-white"
               >
                 {isLoading ? (
-                  <div className="flex items-center">
-                    <div className="loading-spinner mr-2"></div>
-                    Authenticating...
-                  </div>
+                  "Authenticating..."
                 ) : (
                   <>
                     <Lock className="h-4 w-4 mr-2" />
@@ -129,4 +117,11 @@ export default function AdminAuth({ onAuthenticated }: AdminAuthProps) {
             </form>
 
             <div className="mt-6 p-4 bg-maroon-50 rounded-lg">
-              {""}{""}0{""}<br>
+              <p className="text-xs text-maroon-600 text-center">Demo passwords: arathy2024, admin123, camphor@admin</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  )
+}
