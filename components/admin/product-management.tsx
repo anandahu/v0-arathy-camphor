@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -20,7 +22,20 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Package, Plus, Search, Edit, Trash2, Eye, AlertTriangle, DollarSign, Archive } from "lucide-react"
+import {
+  Package,
+  Plus,
+  Search,
+  Edit,
+  Trash2,
+  Eye,
+  AlertTriangle,
+  DollarSign,
+  Archive,
+  Upload,
+  X,
+  ImageIcon,
+} from "lucide-react"
 import { database, type Product, type ProductStats } from "@/lib/database-persistent"
 import { useToast } from "@/hooks/use-toast"
 
@@ -46,8 +61,10 @@ export default function ProductManagement() {
     stock: 0,
     category: "",
     sku: "",
-    image: "",
+    images: [] as string[],
   })
+  const [imageUrls, setImageUrls] = useState<string[]>([])
+  const [newImageUrl, setNewImageUrl] = useState("")
   const { toast } = useToast()
 
   useEffect(() => {
@@ -79,8 +96,35 @@ export default function ProductManagement() {
       stock: 0,
       category: "",
       sku: "",
-      image: "",
+      images: [],
     })
+    setImageUrls([])
+    setNewImageUrl("")
+  }
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files
+    if (!files) return
+
+    Array.from(files).forEach((file) => {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const result = e.target?.result as string
+        setImageUrls((prev) => [...prev, result])
+      }
+      reader.readAsDataURL(file)
+    })
+  }
+
+  const addImageUrl = () => {
+    if (newImageUrl.trim()) {
+      setImageUrls((prev) => [...prev, newImageUrl.trim()])
+      setNewImageUrl("")
+    }
+  }
+
+  const removeImage = (index: number) => {
+    setImageUrls((prev) => prev.filter((_, i) => i !== index))
   }
 
   const handleAddProduct = () => {
@@ -94,7 +138,10 @@ export default function ProductManagement() {
     }
 
     try {
-      database.addProduct(formData)
+      database.addProduct({
+        ...formData,
+        images: imageUrls,
+      })
       loadData()
       resetForm()
       setIsAddDialogOpen(false)
@@ -122,7 +169,10 @@ export default function ProductManagement() {
     }
 
     try {
-      database.updateProduct(selectedProduct.id, formData)
+      database.updateProduct(selectedProduct.id, {
+        ...formData,
+        images: imageUrls,
+      })
       loadData()
       resetForm()
       setIsEditDialogOpen(false)
@@ -166,8 +216,9 @@ export default function ProductManagement() {
       stock: product.stock,
       category: product.category,
       sku: product.sku,
-      image: product.image || "",
+      images: product.images || [],
     })
+    setImageUrls(product.images || [])
     setIsEditDialogOpen(true)
   }
 
@@ -187,22 +238,22 @@ export default function ProductManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-maroon-50 via-burgundy-50 to-flame-50 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-amber-900">Product Management</h1>
-            <p className="text-amber-700">Manage your camphor and incense inventory</p>
+            <h1 className="text-3xl font-bold text-maroon-900">Product Management</h1>
+            <p className="text-maroon-700">Manage your camphor and incense inventory</p>
           </div>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-amber-600 hover:bg-amber-700 text-white">
+              <Button className="bg-maroon-600 hover:bg-maroon-700 text-white">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Product
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Add New Product</DialogTitle>
               </DialogHeader>
@@ -262,15 +313,6 @@ export default function ProductManagement() {
                     placeholder="Enter stock quantity"
                   />
                 </div>
-                <div>
-                  <Label htmlFor="image">Image URL</Label>
-                  <Input
-                    id="image"
-                    value={formData.image}
-                    onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                    placeholder="Enter image URL"
-                  />
-                </div>
                 <div className="col-span-2">
                   <Label htmlFor="description">Description</Label>
                   <Textarea
@@ -281,12 +323,64 @@ export default function ProductManagement() {
                     rows={3}
                   />
                 </div>
+
+                {/* Image Upload Section */}
+                <div className="col-span-2">
+                  <Label>Product Images</Label>
+                  <div className="space-y-4">
+                    {/* File Upload */}
+                    <div className="flex items-center gap-4">
+                      <Input type="file" multiple accept="image/*" onChange={handleImageUpload} className="flex-1" />
+                      <Button type="button" variant="outline" size="sm">
+                        <Upload className="h-4 w-4 mr-2" />
+                        Upload
+                      </Button>
+                    </div>
+
+                    {/* URL Input */}
+                    <div className="flex items-center gap-2">
+                      <Input
+                        value={newImageUrl}
+                        onChange={(e) => setNewImageUrl(e.target.value)}
+                        placeholder="Or enter image URL"
+                        className="flex-1"
+                      />
+                      <Button type="button" onClick={addImageUrl} variant="outline" size="sm">
+                        Add URL
+                      </Button>
+                    </div>
+
+                    {/* Image Preview */}
+                    {imageUrls.length > 0 && (
+                      <div className="grid grid-cols-4 gap-2 mt-4">
+                        {imageUrls.map((url, index) => (
+                          <div key={index} className="relative">
+                            <img
+                              src={url || "/placeholder.svg"}
+                              alt={`Product ${index + 1}`}
+                              className="w-full h-24 object-cover rounded border"
+                            />
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              className="absolute -top-2 -right-2 h-6 w-6 p-0"
+                              onClick={() => removeImage(index)}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
               <div className="flex justify-end gap-2 mt-4">
                 <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
                   Cancel
                 </Button>
-                <Button onClick={handleAddProduct} className="bg-amber-600 hover:bg-amber-700">
+                <Button onClick={handleAddProduct} className="bg-maroon-600 hover:bg-maroon-700">
                   Add Product
                 </Button>
               </div>
@@ -296,47 +390,47 @@ export default function ProductManagement() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <Card className="border-amber-200">
+          <Card className="border-maroon-200 card-hover">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-amber-600">Total Products</p>
-                  <p className="text-2xl font-bold text-amber-900">{stats.totalProducts}</p>
+                  <p className="text-sm text-maroon-600">Total Products</p>
+                  <p className="text-2xl font-bold text-maroon-900">{stats.totalProducts}</p>
                 </div>
-                <Package className="h-8 w-8 text-amber-500" />
+                <Package className="h-8 w-8 text-maroon-500" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-amber-200">
+          <Card className="border-maroon-200 card-hover">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-amber-600">Total Value</p>
-                  <p className="text-2xl font-bold text-amber-900">₹{stats.totalValue.toLocaleString()}</p>
+                  <p className="text-sm text-maroon-600">Total Value</p>
+                  <p className="text-2xl font-bold text-maroon-900">₹{stats.totalValue.toLocaleString()}</p>
                 </div>
                 <DollarSign className="h-8 w-8 text-green-500" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-amber-200">
+          <Card className="border-maroon-200 card-hover">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-amber-600">Low Stock</p>
-                  <p className="text-2xl font-bold text-orange-600">{stats.lowStockCount}</p>
+                  <p className="text-sm text-maroon-600">Low Stock</p>
+                  <p className="text-2xl font-bold text-flame-600">{stats.lowStockCount}</p>
                 </div>
-                <AlertTriangle className="h-8 w-8 text-orange-500" />
+                <AlertTriangle className="h-8 w-8 text-flame-500" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="border-amber-200">
+          <Card className="border-maroon-200 card-hover">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-amber-600">Out of Stock</p>
+                  <p className="text-sm text-maroon-600">Out of Stock</p>
                   <p className="text-2xl font-bold text-red-600">{stats.outOfStockCount}</p>
                 </div>
                 <Archive className="h-8 w-8 text-red-500" />
@@ -346,23 +440,23 @@ export default function ProductManagement() {
         </div>
 
         {/* Search and Filter */}
-        <Card className="border-amber-200">
+        <Card className="border-maroon-200">
           <CardContent className="p-6">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-amber-400 h-4 w-4" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-maroon-400 h-4 w-4" />
                   <Input
                     placeholder="Search products..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 border-amber-200 focus:border-amber-400"
+                    className="pl-10 border-maroon-200 focus:border-maroon-400"
                   />
                 </div>
               </div>
               <div className="w-full md:w-48">
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger className="border-amber-200">
+                  <SelectTrigger className="border-maroon-200">
                     <SelectValue placeholder="All Categories" />
                   </SelectTrigger>
                   <SelectContent>
@@ -382,12 +476,12 @@ export default function ProductManagement() {
         {/* Products Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (
-            <Card key={product.id} className="border-amber-200 hover:shadow-lg transition-shadow">
+            <Card key={product.id} className="border-maroon-200 hover:shadow-lg transition-shadow card-hover">
               <CardContent className="p-4">
-                <div className="aspect-square bg-amber-50 rounded-lg mb-4 overflow-hidden">
-                  {product.image ? (
+                <div className="aspect-square bg-maroon-50 rounded-lg mb-4 overflow-hidden">
+                  {product.images && product.images.length > 0 ? (
                     <img
-                      src={product.image || "/placeholder.svg"}
+                      src={product.images[0] || "/placeholder.svg"}
                       alt={product.name}
                       className="w-full h-full object-cover"
                       onError={(e) => {
@@ -397,26 +491,26 @@ export default function ProductManagement() {
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <Package className="h-16 w-16 text-amber-300" />
+                      <Package className="h-16 w-16 text-maroon-300" />
                     </div>
                   )}
                 </div>
 
                 <div className="space-y-2">
                   <div className="flex items-start justify-between">
-                    <h3 className="font-semibold text-amber-900 line-clamp-2">{product.name}</h3>
+                    <h3 className="font-semibold text-maroon-900 line-clamp-2">{product.name}</h3>
                     {getStockBadge(product.stock)}
                   </div>
 
-                  <p className="text-sm text-amber-600">SKU: {product.sku}</p>
-                  <p className="text-sm text-amber-700 line-clamp-2">{product.description}</p>
+                  <p className="text-sm text-maroon-600">SKU: {product.sku}</p>
+                  <p className="text-sm text-maroon-700 line-clamp-2">{product.description}</p>
 
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-lg font-bold text-amber-900">₹{product.price}</p>
-                      <p className="text-sm text-amber-600">Stock: {product.stock}</p>
+                      <p className="text-lg font-bold text-maroon-900">₹{product.price}</p>
+                      <p className="text-sm text-maroon-600">Stock: {product.stock}</p>
                     </div>
-                    <Badge variant="outline" className="border-amber-300 text-amber-700">
+                    <Badge variant="outline" className="border-maroon-300 text-maroon-700">
                       {product.category}
                     </Badge>
                   </div>
@@ -426,7 +520,7 @@ export default function ProductManagement() {
                       size="sm"
                       variant="outline"
                       onClick={() => openViewDialog(product)}
-                      className="flex-1 border-amber-200 text-amber-700 hover:bg-amber-50"
+                      className="flex-1 border-maroon-200 text-maroon-700 hover:bg-maroon-50"
                     >
                       <Eye className="h-3 w-3 mr-1" />
                       View
@@ -435,7 +529,7 @@ export default function ProductManagement() {
                       size="sm"
                       variant="outline"
                       onClick={() => openEditDialog(product)}
-                      className="flex-1 border-amber-200 text-amber-700 hover:bg-amber-50"
+                      className="flex-1 border-maroon-200 text-maroon-700 hover:bg-maroon-50"
                     >
                       <Edit className="h-3 w-3 mr-1" />
                       Edit
@@ -476,18 +570,18 @@ export default function ProductManagement() {
         </div>
 
         {filteredProducts.length === 0 && (
-          <Card className="border-amber-200">
+          <Card className="border-maroon-200">
             <CardContent className="p-12 text-center">
-              <Package className="h-16 w-16 text-amber-300 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-amber-900 mb-2">No products found</h3>
-              <p className="text-amber-600">Try adjusting your search or filter criteria</p>
+              <Package className="h-16 w-16 text-maroon-300 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-maroon-900 mb-2">No products found</h3>
+              <p className="text-maroon-600">Try adjusting your search or filter criteria</p>
             </CardContent>
           </Card>
         )}
 
         {/* Edit Dialog */}
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Edit Product</DialogTitle>
             </DialogHeader>
@@ -547,15 +641,6 @@ export default function ProductManagement() {
                   placeholder="Enter stock quantity"
                 />
               </div>
-              <div>
-                <Label htmlFor="edit-image">Image URL</Label>
-                <Input
-                  id="edit-image"
-                  value={formData.image}
-                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                  placeholder="Enter image URL"
-                />
-              </div>
               <div className="col-span-2">
                 <Label htmlFor="edit-description">Description</Label>
                 <Textarea
@@ -566,12 +651,65 @@ export default function ProductManagement() {
                   rows={3}
                 />
               </div>
+
+              {/* Image Upload Section for Edit */}
+              <div className="col-span-2">
+                <Label>Product Images</Label>
+                <div className="space-y-4">
+                  {/* File Upload */}
+                  <div className="flex items-center gap-4">
+                    <Input type="file" multiple accept="image/*" onChange={handleImageUpload} className="flex-1" />
+                    <Button type="button" variant="outline" size="sm">
+                      <Upload className="h-4 w-4 mr-2" />
+                      Upload
+                    </Button>
+                  </div>
+
+                  {/* URL Input */}
+                  <div className="flex items-center gap-2">
+                    <Input
+                      value={newImageUrl}
+                      onChange={(e) => setNewImageUrl(e.target.value)}
+                      placeholder="Or enter image URL"
+                      className="flex-1"
+                    />
+                    <Button type="button" onClick={addImageUrl} variant="outline" size="sm">
+                      <Upload className="h-4 w-4 mr-2" />
+                      Add URL
+                    </Button>
+                  </div>
+
+                  {/* Image Preview */}
+                  {imageUrls.length > 0 && (
+                    <div className="grid grid-cols-4 gap-2 mt-4">
+                      {imageUrls.map((url, index) => (
+                        <div key={index} className="relative">
+                          <img
+                            src={url || "/placeholder.svg"}
+                            alt={`Product ${index + 1}`}
+                            className="w-full h-24 object-cover rounded border"
+                          />
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="sm"
+                            className="absolute -top-2 -right-2 h-6 w-6 p-0"
+                            onClick={() => removeImage(index)}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
             <div className="flex justify-end gap-2 mt-4">
               <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleEditProduct} className="bg-amber-600 hover:bg-amber-700">
+              <Button onClick={handleEditProduct} className="bg-maroon-600 hover:bg-maroon-700">
                 Update Product
               </Button>
             </div>
@@ -580,58 +718,81 @@ export default function ProductManagement() {
 
         {/* View Dialog */}
         <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Product Details</DialogTitle>
             </DialogHeader>
             {selectedProduct && (
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="aspect-square bg-amber-50 rounded-lg overflow-hidden">
-                    {selectedProduct.image ? (
-                      <img
-                        src={selectedProduct.image || "/placeholder.svg"}
-                        alt={selectedProduct.name}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement
-                          target.src = "/placeholder.svg?height=300&width=300"
-                        }}
-                      />
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Images Section */}
+                  <div className="space-y-4">
+                    {selectedProduct.images && selectedProduct.images.length > 0 ? (
+                      <div className="space-y-2">
+                        <div className="aspect-square bg-maroon-50 rounded-lg overflow-hidden">
+                          <img
+                            src={selectedProduct.images[0] || "/placeholder.svg"}
+                            alt={selectedProduct.name}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement
+                              target.src = "/placeholder.svg?height=400&width=400"
+                            }}
+                          />
+                        </div>
+                        {selectedProduct.images.length > 1 && (
+                          <div className="grid grid-cols-4 gap-2">
+                            {selectedProduct.images.slice(1).map((image, index) => (
+                              <img
+                                key={index}
+                                src={image || "/placeholder.svg"}
+                                alt={`${selectedProduct.name} ${index + 2}`}
+                                className="w-full h-16 object-cover rounded border"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement
+                                  target.src = "/placeholder.svg?height=64&width=64"
+                                }}
+                              />
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Package className="h-24 w-24 text-amber-300" />
+                      <div className="aspect-square bg-maroon-50 rounded-lg flex items-center justify-center">
+                        <ImageIcon className="h-24 w-24 text-maroon-300" />
                       </div>
                     )}
                   </div>
+
+                  {/* Product Info */}
                   <div className="space-y-4">
                     <div>
-                      <h3 className="text-2xl font-bold text-amber-900">{selectedProduct.name}</h3>
-                      <p className="text-amber-600">SKU: {selectedProduct.sku}</p>
+                      <h3 className="text-2xl font-bold text-maroon-900">{selectedProduct.name}</h3>
+                      <p className="text-maroon-600">SKU: {selectedProduct.sku}</p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="border-amber-300 text-amber-700">
+                      <Badge variant="outline" className="border-maroon-300 text-maroon-700">
                         {selectedProduct.category}
                       </Badge>
                       {getStockBadge(selectedProduct.stock)}
                     </div>
                     <div>
-                      <p className="text-3xl font-bold text-amber-900">₹{selectedProduct.price}</p>
-                      <p className="text-amber-600">Stock: {selectedProduct.stock} units</p>
+                      <p className="text-3xl font-bold text-maroon-900">₹{selectedProduct.price}</p>
+                      <p className="text-maroon-600">Stock: {selectedProduct.stock} units</p>
                     </div>
                     <div>
-                      <p className="text-sm text-amber-600">
+                      <p className="text-sm text-maroon-600">
                         Created: {selectedProduct.createdAt.toLocaleDateString()}
                       </p>
-                      <p className="text-sm text-amber-600">
+                      <p className="text-sm text-maroon-600">
                         Updated: {selectedProduct.updatedAt.toLocaleDateString()}
                       </p>
                     </div>
                   </div>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-amber-900 mb-2">Description</h4>
-                  <p className="text-amber-700">{selectedProduct.description}</p>
+                  <h4 className="font-semibold text-maroon-900 mb-2">Description</h4>
+                  <p className="text-maroon-700">{selectedProduct.description}</p>
                 </div>
               </div>
             )}

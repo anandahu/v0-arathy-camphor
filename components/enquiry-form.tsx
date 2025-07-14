@@ -168,11 +168,10 @@ export default function EnquiryForm() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div className="flex items-center gap-2 text-maroon-700">
               <Phone className="h-4 w-4" />
-              <span>+91 98765 43210</span>
-            </div>
+              <span>+91 7907417217   </div>
             <div className="flex items-center gap-2 text-maroon-700">
               <Mail className="h-4 w-4" />
-              <span>info@arathycamphor.com</span>
+              <span>infoarathicamphor@gmail.com</span>
             </div>
           </div>
         </div>

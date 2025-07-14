@@ -1,263 +1,251 @@
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { MessageCircle, Star, ArrowLeft } from "lucide-react"
+"use client"
+
+import { useState, useEffect } from "react"
+import { useParams } from "next/navigation"
 import Link from "next/link"
-import EnquiryForm from "@/components/enquiry-form"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Separator } from "@/components/ui/separator"
+import SiteHeader from "@/components/site-header"
 import ProductReviews from "@/components/product-reviews"
 import RelatedProducts from "@/components/related-products"
-import { getAllProducts, getProductById } from "@/lib/products"
+import { database, type Product } from "@/lib/database-persistent"
+import { ArrowLeft, ShoppingCart, Heart, Share2, Star, Package, Truck, Shield, Award } from "lucide-react"
 
-export async function generateStaticParams() {
-  const products = getAllProducts()
-  return products.map((product) => ({
-    id: product.id.toString(),
-  }))
-}
+export default function ProductPage() {
+  const params = useParams()
+  const [product, setProduct] = useState<Product | null>(null)
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0)
+  const [loading, setLoading] = useState(true)
 
-export default function ProductPage({ params }: { params: { id: string } }) {
-  const product = getProductById(Number.parseInt(params.id))
+  useEffect(() => {
+    if (params.id) {
+      loadProduct(params.id as string)
+    }
+  }, [params.id])
 
-  if (!product) {
-    return <div className="container mx-auto px-4 py-16 text-center">Product not found</div>
+  const loadProduct = (id: string) => {
+    setLoading(true)
+    const foundProduct = database.getProductById(id)
+    setProduct(foundProduct)
+    setLoading(false)
   }
 
-  return (
-    <main className="min-h-screen bg-amber-50/50">
-      {/* Breadcrumb */}
-      <div className="bg-amber-100 py-3">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center text-sm text-amber-800">
-            <Link href="/" className="hover:underline">
-              Home
-            </Link>
-            <span className="mx-2">/</span>
-            <Link href="/#products" className="hover:underline">
-              Products
-            </Link>
-            <span className="mx-2">/</span>
-            <span className="font-medium">{product.name}</span>
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-orange-50 via-amber-50 to-yellow-50">
+        <SiteHeader />
+        <div className="container mx-auto px-4 py-8 mt-16">
+          <div className="animate-pulse">
+            <div className="h-8 bg-amber-200 rounded w-1/4 mb-8"></div>
+            <div className="grid lg:grid-cols-2 gap-12">
+              <div className="aspect-square bg-amber-200 rounded-lg"></div>
+              <div className="space-y-4">
+                <div className="h-8 bg-amber-200 rounded w-3/4"></div>
+                <div className="h-4 bg-amber-200 rounded w-1/2"></div>
+                <div className="h-6 bg-amber-200 rounded w-1/4"></div>
+                <div className="h-20 bg-amber-200 rounded"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+    )
+  }
 
-      {/* Product Detail */}
-      <section className="py-12">
-        <div className="container mx-auto px-4">
-          <Link
-            href="/"
-            className="inline-flex items-center text-amber-700 hover:text-amber-900 mb-8 transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" /> Back to all products
+  if (!product) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-orange-50 via-amber-50 to-yellow-50">
+        <SiteHeader />
+        <div className="container mx-auto px-4 py-8 mt-16">
+          <div className="text-center py-20">
+            <div className="text-6xl mb-4">😔</div>
+            <h1 className="text-3xl font-bold text-amber-900 mb-4">Product Not Found</h1>
+            <p className="text-amber-700 mb-8">The product you're looking for doesn't exist or has been removed.</p>
+            <Link href="/products">
+              <Button className="bg-amber-600 hover:bg-amber-700 text-white">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Products
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  const inStock = product.stock > 0
+  const rating = 4.5 // Default rating
+  const reviews = Math.floor(Math.random() * 50) + 10 // Random review count
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-amber-50 to-yellow-50">
+      <SiteHeader />
+
+      <div className="container mx-auto px-4 py-8 mt-16">
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-2 mb-8">
+          <Link href="/" className="text-amber-600 hover:text-amber-800">
+            Home
           </Link>
+          <span className="text-amber-400">/</span>
+          <Link href="/products" className="text-amber-600 hover:text-amber-800">
+            Products
+          </Link>
+          <span className="text-amber-400">/</span>
+          <span className="text-amber-800 font-medium">{product.name}</span>
+        </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Product Images */}
-            <div className="space-y-6">
-              <div className="relative h-[400px] overflow-hidden rounded-lg border border-amber-200 bg-white shadow-md">
-                <Image
-                  src={product.image || "/placeholder.svg"}
+        {/* Product Details */}
+        <div className="grid lg:grid-cols-2 gap-12 mb-16">
+          {/* Product Images */}
+          <div className="space-y-4">
+            <div className="aspect-square bg-white rounded-lg border-2 border-amber-200 overflow-hidden">
+              {product.images && product.images.length > 0 ? (
+                <img
+                  src={product.images[selectedImageIndex] || "/placeholder.svg"}
                   alt={product.name}
-                  fill
-                  className="object-cover transition-all duration-500 hover:scale-105"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement
+                    target.src = "/placeholder.svg?height=600&width=600"
+                  }}
                 />
-              </div>
-              <div className="grid grid-cols-4 gap-4">
-                {[...Array(4)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="relative h-24 cursor-pointer overflow-hidden rounded-md border border-amber-200 bg-white"
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-amber-50">
+                  <Package className="h-24 w-24 text-amber-300" />
+                </div>
+              )}
+            </div>
+
+            {/* Thumbnail Images */}
+            {product.images && product.images.length > 1 && (
+              <div className="grid grid-cols-4 gap-2">
+                {product.images.map((image, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setSelectedImageIndex(index)}
+                    className={`aspect-square rounded border-2 overflow-hidden ${
+                      selectedImageIndex === index ? "border-amber-600" : "border-amber-200"
+                    }`}
                   >
-                    <Image
-                      src={product.image || "/placeholder.svg"}
-                      alt={`${product.name} view ${i + 1}`}
-                      fill
-                      className="object-cover"
+                    <img
+                      src={image || "/placeholder.svg"}
+                      alt={`${product.name} ${index + 1}`}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement
+                        target.src = "/placeholder.svg?height=100&width=100"
+                      }}
                     />
-                  </div>
+                  </button>
                 ))}
               </div>
+            )}
+          </div>
+
+          {/* Product Info */}
+          <div className="space-y-6">
+            <div>
+              <Badge variant="outline" className="border-amber-300 text-amber-700 mb-2">
+                {product.category}
+              </Badge>
+              <h1 className="text-3xl md:text-4xl font-bold text-amber-900 mb-2">{product.name}</h1>
+              <p className="text-amber-600">SKU: {product.sku}</p>
             </div>
 
-            {/* Product Info */}
-            <div className="space-y-8">
-              <div>
-                <h1 className="text-3xl font-bold text-amber-900 mb-2">{product.name}</h1>
-                <div className="flex items-center mb-4">
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="h-5 w-5 text-amber-400 fill-amber-400" />
-                    ))}
-                  </div>
-                  <span className="ml-2 text-sm text-amber-700">24 reviews</span>
-                </div>
-                <p className="text-xl font-semibold text-amber-800 mb-4">₹{product.price}.00</p>
-                <p className="text-amber-700 leading-relaxed">{product.description}</p>
-                <p className="mt-4 text-amber-700 leading-relaxed">
-                  Our premium {product.name.toLowerCase()} is crafted using traditional methods passed down through
-                  generations. Each product is made with the finest ingredients to ensure a pure and authentic
-                  experience for your devotional needs.
-                </p>
+            {/* Rating */}
+            <div className="flex items-center gap-4">
+              <div className="flex items-center">
+                {[...Array(5)].map((_, i) => (
+                  <Star
+                    key={i}
+                    className={`h-5 w-5 ${i < Math.floor(rating) ? "text-flame-500 fill-current" : "text-gray-300"}`}
+                  />
+                ))}
               </div>
+              <span className="text-amber-700">
+                {rating} ({reviews} reviews)
+              </span>
+            </div>
 
-              <div className="border-t border-amber-200 pt-6">
-                <h3 className="font-medium text-amber-900 mb-3">Select Weight:</h3>
-                <div className="flex flex-wrap gap-3 mb-6">
-                  {product.weights.map((weight) => (
-                    <Button
-                      key={weight}
-                      variant="outline"
-                      className="border-amber-300 hover:border-amber-500 hover:bg-amber-100"
-                    >
-                      {weight}
-                    </Button>
-                  ))}
-                </div>
+            {/* Price */}
+            <div className="space-y-2">
+              <div className="text-3xl font-bold text-amber-900">₹{product.price}</div>
+              <div className="flex items-center gap-4">
+                <span className={`text-sm font-medium ${inStock ? "text-green-600" : "text-red-600"}`}>
+                  {inStock ? `${product.stock} in stock` : "Out of stock"}
+                </span>
+              </div>
+            </div>
 
+            {/* Description */}
+            <div>
+              <h3 className="text-lg font-semibold text-amber-900 mb-2">Description</h3>
+              <p className="text-amber-700 leading-relaxed">{product.description}</p>
+            </div>
+
+            {/* Actions */}
+            <div className="space-y-4">
+              <div className="flex gap-4">
+                <Button size="lg" className="flex-1 bg-amber-600 hover:bg-amber-700 text-white" disabled={!inStock}>
+                  <ShoppingCart className="h-5 w-5 mr-2" />
+                  {inStock ? "Add to Cart" : "Out of Stock"}
+                </Button>
                 <Button
                   size="lg"
-                  className="w-full bg-amber-600 hover:bg-amber-700 transition-all duration-300 transform hover:scale-[1.02]"
+                  variant="outline"
+                  className="border-amber-600 text-amber-700 hover:bg-amber-50 bg-transparent"
                 >
-                  <MessageCircle className="h-5 w-5 mr-2" /> Enquire Now
+                  <Heart className="h-5 w-5" />
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-amber-600 text-amber-700 hover:bg-amber-50 bg-transparent"
+                >
+                  <Share2 className="h-5 w-5" />
                 </Button>
               </div>
-
-              <div className="bg-white rounded-lg border border-amber-200 p-4">
-                <h3 className="font-medium text-amber-900 mb-2">Product Highlights:</h3>
-                <ul className="space-y-2">
-                  <li className="flex items-start">
-                    <span className="text-amber-500 mr-2">•</span>
-                    <span>100% pure and natural ingredients</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-amber-500 mr-2">•</span>
-                    <span>Long-lasting fragrance for extended rituals</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-amber-500 mr-2">•</span>
-                    <span>Handcrafted using traditional methods</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-amber-500 mr-2">•</span>
-                    <span>Ideal for daily puja and special occasions</span>
-                  </li>
-                </ul>
-              </div>
             </div>
+
+            {/* Features */}
+            <Card className="border-amber-200">
+              <CardContent className="p-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center gap-2">
+                    <Truck className="h-5 w-5 text-amber-600" />
+                    <span className="text-sm text-amber-700">Free Delivery</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Shield className="h-5 w-5 text-amber-600" />
+                    <span className="text-sm text-amber-700">Quality Assured</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Award className="h-5 w-5 text-amber-600" />
+                    <span className="text-sm text-amber-700">Premium Quality</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Package className="h-5 w-5 text-amber-600" />
+                    <span className="text-sm text-amber-700">Secure Packaging</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
-      </section>
 
-      {/* Product Details Tabs */}
-      <section className="py-12 bg-white">
-        <div className="container mx-auto px-4">
-          <Tabs defaultValue="description" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 bg-amber-100">
-              <TabsTrigger value="description">Description</TabsTrigger>
-              <TabsTrigger value="specifications">Specifications</TabsTrigger>
-              <TabsTrigger value="reviews">Reviews</TabsTrigger>
-            </TabsList>
-            <TabsContent value="description" className="p-6 border border-amber-100 rounded-b-lg">
-              <div className="prose max-w-none text-amber-800">
-                <h3 className="text-xl font-semibold text-amber-900 mb-4">About {product.name}</h3>
-                <p>
-                  {product.name} is one of our premium offerings, carefully crafted to enhance your spiritual
-                  experience. The fragrance is designed to create a serene and peaceful atmosphere, perfect for
-                  meditation and prayer.
-                </p>
-                <p className="mt-4">
-                  Our products are made using traditional methods that have been passed down through generations. We
-                  source only the finest ingredients to ensure that our products meet the highest standards of quality
-                  and purity.
-                </p>
-                <p className="mt-4">
-                  Whether you're performing daily rituals or celebrating special occasions, our{" "}
-                  {product.name.toLowerCase()}
-                  will help create the perfect ambiance for your devotional needs.
-                </p>
+        <Separator className="my-16 bg-amber-200" />
 
-                <h3 className="text-xl font-semibold text-amber-900 mt-8 mb-4">How to Use</h3>
-                <p>For Agarbathies (Incense Sticks):</p>
-                <ol className="list-decimal pl-5 mt-2 space-y-2">
-                  <li>Place the incense stick in a suitable holder.</li>
-                  <li>Light the tip of the stick until it catches fire.</li>
-                  <li>Blow out the flame gently, allowing the stick to smolder and release its fragrance.</li>
-                  <li>Place the holder in a safe location away from flammable materials.</li>
-                </ol>
+        {/* Reviews Section */}
+        <ProductReviews productId={product.id} />
 
-                <p className="mt-4">For Camphor:</p>
-                <ol className="list-decimal pl-5 mt-2 space-y-2">
-                  <li>Place the camphor tablet in a fire-safe container or aarti plate.</li>
-                  <li>Light the camphor using a match or lighter.</li>
-                  <li>Use for aarti ceremonies or rituals as required.</li>
-                  <li>Always handle with care and keep away from flammable materials.</li>
-                </ol>
-              </div>
-            </TabsContent>
-            <TabsContent value="specifications" className="p-6 border border-amber-100 rounded-b-lg">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left">
-                  <tbody className="divide-y divide-amber-200">
-                    <tr className="border-b border-amber-200">
-                      <th className="py-3 text-amber-900 font-medium">Product Name</th>
-                      <td className="py-3 text-amber-700">{product.name}</td>
-                    </tr>
-                    <tr className="border-b border-amber-200">
-                      <th className="py-3 text-amber-900 font-medium">Available Weights</th>
-                      <td className="py-3 text-amber-700">{product.weights.join(", ")}</td>
-                    </tr>
-                    <tr className="border-b border-amber-200">
-                      <th className="py-3 text-amber-900 font-medium">Ingredients</th>
-                      <td className="py-3 text-amber-700">100% Natural, Premium Quality</td>
-                    </tr>
-                    <tr className="border-b border-amber-200">
-                      <th className="py-3 text-amber-900 font-medium">Fragrance Duration</th>
-                      <td className="py-3 text-amber-700">30-45 minutes (for agarbathies)</td>
-                    </tr>
-                    <tr className="border-b border-amber-200">
-                      <th className="py-3 text-amber-900 font-medium">Packaging</th>
-                      <td className="py-3 text-amber-700">Eco-friendly packaging</td>
-                    </tr>
-                    <tr className="border-b border-amber-200">
-                      <th className="py-3 text-amber-900 font-medium">Shelf Life</th>
-                      <td className="py-3 text-amber-700">12 months from date of manufacture</td>
-                    </tr>
-                    <tr className="border-b border-amber-200">
-                      <th className="py-3 text-amber-900 font-medium">Storage</th>
-                      <td className="py-3 text-amber-700">Store in a cool, dry place away from direct sunlight</td>
-                    </tr>
-                    <tr>
-                      <th className="py-3 text-amber-900 font-medium">Country of Origin</th>
-                      <td className="py-3 text-amber-700">India</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </TabsContent>
-            <TabsContent value="reviews" className="p-6 border border-amber-100 rounded-b-lg">
-              <ProductReviews productId={product.id} />
-            </TabsContent>
-          </Tabs>
-        </div>
-      </section>
+        <Separator className="my-16 bg-amber-200" />
 
-      {/* Enquiry Form */}
-      <section className="py-12 bg-amber-50">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-2xl font-bold text-center text-amber-900 mb-8">Enquire About This Product</h2>
-            <EnquiryForm productName={product.name} />
-          </div>
-        </div>
-      </section>
-
-      {/* Related Products */}
-      <section className="py-12">
-        <div className="container mx-auto px-4">
-          <h2 className="text-2xl font-bold text-amber-900 mb-8">You May Also Like</h2>
-          <RelatedProducts currentProductId={product.id} />
-        </div>
-      </section>
-    </main>
+        {/* Related Products */}
+        <RelatedProducts currentProductId={product.id} category={product.category} />
+      </div>
+    </div>
   )
 }

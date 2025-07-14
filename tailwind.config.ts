@@ -1,6 +1,6 @@
 import type { Config } from "tailwindcss"
 
-const config = {
+const config: Config = {
   darkMode: ["class"],
   content: [
     "./pages/**/*.{ts,tsx}",
@@ -53,18 +53,17 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Darker color scheme based on the logo
         maroon: {
           50: "#fdf2f2",
           100: "#fce7e7",
-          200: "#f9d5d5",
-          300: "#f4b5b5",
-          400: "#ec8888",
-          500: "#e05d5d",
-          600: "#cc3f3f",
-          700: "#a91b1b",
+          200: "#f9d1d1",
+          300: "#f4abab",
+          400: "#ec7979",
+          500: "#e04d4d",
+          600: "#cc2e2e",
+          700: "#ab1a1a",
           800: "#8b1a1a",
-          900: "#741b1b",
+          900: "#751a1a",
         },
         burgundy: {
           50: "#fef2f2",

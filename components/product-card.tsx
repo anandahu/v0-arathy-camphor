@@ -1,122 +1,118 @@
+"use client"
+
+import { useState } from "react"
 import Link from "next/link"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Star, ShoppingCart, Heart } from "lucide-react"
-import type { Product } from "@/lib/products"
+import { Star, ShoppingCart, Eye } from "lucide-react"
+import type { Product } from "@/lib/database-persistent"
 
 interface ProductCardProps {
   product: Product
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const discountPercentage = product.originalPrice
-    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
-    : 0
+  const [imageError, setImageError] = useState(false)
+  const [imageLoading, setImageLoading] = useState(true)
+
+  const primaryImage =
+    product.images && product.images.length > 0 ? product.images[0] : "/placeholder.svg?height=300&width=300"
+
+  const handleImageError = () => {
+    setImageError(true)
+    setImageLoading(false)
+  }
+
+  const handleImageLoad = () => {
+    setImageLoading(false)
+  }
 
   return (
-    <Card className="group border-maroon-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden">
-      <div className="relative">
-        <div className="aspect-square overflow-hidden bg-gradient-to-br from-maroon-50 to-burgundy-50">
-          <img
-            src={product.image || "/placeholder.svg"}
-            alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement
-              target.src = "/placeholder.svg?height=300&width=300"
-            }}
-          />
+    <Card className="group hover:shadow-xl transition-all duration-300 border-maroon-200 bg-gradient-to-br from-white to-maroon-50 overflow-hidden">
+      <div className="relative overflow-hidden">
+        {imageLoading && (
+          <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center">
+            <div className="text-gray-400">Loading...</div>
+          </div>
+        )}
+        <img
+          src={imageError ? "/placeholder.svg?height=300&width=300" : primaryImage}
+          alt={product.name}
+          className={`w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300 ${
+            imageLoading ? "opacity-0" : "opacity-100"
+          }`}
+          onError={handleImageError}
+          onLoad={handleImageLoad}
+        />
+
+        {product.stock <= 5 && product.stock > 0 && (
+          <Badge className="absolute top-2 left-2 bg-orange-500 text-white">Low Stock</Badge>
+        )}
+
+        {product.stock === 0 && <Badge className="absolute top-2 left-2 bg-red-500 text-white">Out of Stock</Badge>}
+
+        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <Link href={`/products/${product.id}`}>
+            <Button size="sm" variant="secondary" className="bg-white/90 hover:bg-white">
+              <Eye className="h-4 w-4" />
+            </Button>
+          </Link>
         </div>
-
-        {/* Discount Badge */}
-        {discountPercentage > 0 && (
-          <Badge className="absolute top-2 left-2 bg-flame-600 text-white">{discountPercentage}% OFF</Badge>
-        )}
-
-        {/* Stock Status */}
-        {!product.inStock && (
-          <Badge variant="destructive" className="absolute top-2 right-2">
-            Out of Stock
-          </Badge>
-        )}
-
-        {/* Wishlist Button */}
-        <Button
-          size="sm"
-          variant="outline"
-          className="absolute top-2 right-2 w-8 h-8 p-0 bg-white/80 backdrop-blur-sm border-maroon-200 hover:bg-maroon-50"
-        >
-          <Heart className="h-4 w-4 text-maroon-600" />
-        </Button>
       </div>
 
-      <CardContent className="p-4 space-y-3">
-        {/* Category */}
-        <Badge variant="outline" className="border-maroon-300 text-maroon-700 text-xs">
-          {product.category}
-        </Badge>
+      <CardContent className="p-4">
+        <div className="mb-2">
+          <Badge variant="outline" className="text-xs border-maroon-300 text-maroon-700">
+            {product.category}
+          </Badge>
+        </div>
 
-        {/* Product Name */}
-        <Link href={`/products/${product.id}`}>
-          <h3 className="font-semibold text-maroon-900 line-clamp-2 hover:text-maroon-700 transition-colors">
-            {product.name}
-          </h3>
-        </Link>
+        <h3 className="font-semibold text-lg text-maroon-900 mb-2 line-clamp-2 group-hover:text-maroon-700 transition-colors">
+          {product.name}
+        </h3>
 
-        {/* Description */}
-        <p className="text-sm text-maroon-600 line-clamp-2">{product.description}</p>
+        <p className="text-sm text-maroon-600 mb-3 line-clamp-2">{product.description}</p>
 
-        {/* Rating */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center space-x-1">
             {[...Array(5)].map((_, i) => (
               <Star
                 key={i}
                 className={`h-4 w-4 ${
-                  i < Math.floor(product.rating) ? "text-flame-500 fill-current" : "text-gray-300"
+                  i < Math.floor(product.rating || 4.5) ? "text-flame-500 fill-current" : "text-gray-300"
                 }`}
               />
             ))}
+            <span className="text-sm text-maroon-600 ml-1">({product.rating || 4.5})</span>
           </div>
-          <span className="text-sm text-maroon-600">
-            {product.rating} ({product.reviews} reviews)
-          </span>
+
+          <div className="text-right">
+            <span className="text-lg font-bold text-maroon-900">₹{product.price}</span>
+            {product.originalPrice && product.originalPrice > product.price && (
+              <span className="text-sm text-gray-500 line-through ml-1">₹{product.originalPrice}</span>
+            )}
+          </div>
         </div>
 
-        {/* Features */}
-        <div className="flex flex-wrap gap-1">
-          {product.features.slice(0, 2).map((feature, index) => (
-            <Badge key={index} variant="secondary" className="text-xs bg-maroon-100 text-maroon-700">
-              {feature}
-            </Badge>
-          ))}
-        </div>
+        {product.stock > 0 && <p className="text-xs text-maroon-600">{product.stock} in stock</p>}
+      </CardContent>
 
-        {/* Price */}
-        <div className="flex items-center gap-2">
-          <span className="text-lg font-bold text-maroon-900">₹{product.price}</span>
-          {product.originalPrice && (
-            <span className="text-sm text-gray-500 line-through">₹{product.originalPrice}</span>
-          )}
-        </div>
-
-        {/* Actions */}
-        <div className="flex gap-2 pt-2">
+      <CardFooter className="p-4 pt-0">
+        <div className="flex gap-2 w-full">
           <Link href={`/products/${product.id}`} className="flex-1">
             <Button
               variant="outline"
-              className="w-full border-maroon-200 text-maroon-700 hover:bg-maroon-50 bg-transparent"
+              className="w-full border-maroon-300 text-maroon-700 hover:bg-maroon-50 bg-transparent"
             >
               View Details
             </Button>
           </Link>
-          <Button className="flex-1 bg-maroon-700 hover:bg-maroon-800 text-white" disabled={!product.inStock}>
-            <ShoppingCart className="h-4 w-4 mr-2" />
-            {product.inStock ? "Add to Cart" : "Out of Stock"}
+          <Button className="bg-maroon-600 hover:bg-maroon-700 text-white" disabled={product.stock === 0}>
+            <ShoppingCart className="h-4 w-4" />
           </Button>
         </div>
-      </CardContent>
+      </CardFooter>
     </Card>
   )
 }

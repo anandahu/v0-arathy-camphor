@@ -1,33 +1,93 @@
+"use client"
+
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Flame, Leaf, ArrowRight, Phone, Mail, MapPin, Settings, Award, Shield, Clock } from "lucide-react"
+import {
+  Flame,
+  Leaf,
+  ArrowRight,
+  Phone,
+  Mail,
+  MapPin,
+  Settings,
+  Award,
+  Shield,
+  Clock,
+  Sparkles,
+  Star,
+} from "lucide-react"
 import SiteHeader from "@/components/site-header"
 import ProductCard from "@/components/product-card"
 import TestimonialCard from "@/components/testimonial-card"
 import EnquiryForm from "@/components/enquiry-form"
 import DecorativePattern from "@/components/decorative-pattern"
 import DecorativeDivider from "@/components/decorative-divider"
-import { products } from "@/lib/products"
+import { database, type Product } from "@/lib/database-persistent"
 
 export default function HomePage() {
-  const featuredProducts = products.slice(0, 6)
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    loadFeaturedProducts()
+  }, [])
+
+  const loadFeaturedProducts = () => {
+    try {
+      const allProducts = database.getAllProducts()
+      setFeaturedProducts(allProducts.slice(0, 6))
+    } catch (error) {
+      console.error("Error loading products:", error)
+      setFeaturedProducts([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const testimonials = [
+    {
+      name: "Priya Sharma",
+      location: "Mumbai",
+      rating: 5,
+      comment:
+        "The camphor quality is exceptional! It burns cleanly and the fragrance is divine. I've been using Arathy products for years and they never disappoint.",
+      avatar: "/placeholder-user.jpg",
+    },
+    {
+      name: "Rajesh Kumar",
+      location: "Delhi",
+      rating: 5,
+      comment:
+        "Best incense sticks I've ever used. The sandalwood fragrance is authentic and long-lasting. Perfect for daily prayers and meditation.",
+      avatar: "/placeholder-user.jpg",
+    },
+    {
+      name: "Meera Patel",
+      location: "Ahmedabad",
+      rating: 4,
+      comment:
+        "Excellent quality agarbathy. The packaging is good and the products arrive fresh. Highly recommended for all spiritual needs.",
+      avatar: "/placeholder-user.jpg",
+    },
+  ]
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-maroon-50 via-burgundy-50 to-flame-50">
       <SiteHeader />
 
-      {/* Admin Panel Link */}
-      <div className="fixed top-20 right-4 z-40">
+      {/* Subtle Admin Panel Link - Less Prominent */}
+      <div className="fixed bottom-4 left-4 z-40">
         <Link href="/admin">
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
-            className="bg-white/90 backdrop-blur-sm border-maroon-200 text-maroon-800 hover:bg-maroon-50 shadow-lg"
+            className="bg-gray-100/80 backdrop-blur-sm border border-gray-200 text-gray-600 hover:bg-gray-200/80 shadow-sm opacity-60 hover:opacity-100 transition-all duration-300 text-xs"
           >
-            <Settings className="h-4 w-4 mr-2" />
-            Admin Panel
+            <Settings className="h-3 w-3 mr-1" />
+            Admin
           </Button>
         </Link>
       </div>
@@ -46,10 +106,9 @@ export default function HomePage() {
           <DecorativePattern className="absolute -top-10 -left-10 w-20 h-20 text-flame-300/30" />
           <DecorativePattern className="absolute -bottom-10 -right-10 w-20 h-20 text-flame-300/30" />
 
-          {/* Logo in Hero */}
-          
-
-          <Badge className="mb-6 bg-maroon-600/90 text-white border-maroon-500">Premium Quality Since 1985</Badge>
+          <Badge className="mb-6 bg-maroon-600/90 text-white border-maroon-500">
+            Premium Quality Spiritual Products
+          </Badge>
 
           <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white">
             Divine Fragrance
@@ -116,7 +175,7 @@ export default function HomePage() {
               </CardHeader>
               <CardContent>
                 <p className="text-maroon-600 text-center">
-                  crafted with traditional methods to ensure the highest quality and authentic fragrance.
+                  Crafted with traditional methods to ensure the highest quality and authentic fragrance.
                 </p>
               </CardContent>
             </Card>
@@ -130,7 +189,7 @@ export default function HomePage() {
               </CardHeader>
               <CardContent>
                 <p className="text-maroon-600 text-center">
-                  years of experience serving devotees with authentic spiritual products.
+                  Years of experience serving devotees with authentic spiritual products.
                 </p>
               </CardContent>
             </Card>
@@ -140,7 +199,7 @@ export default function HomePage() {
 
       <DecorativeDivider />
 
-      {/* Featured Products */}
+      {/* Featured Products or Launching Soon */}
       <section className="py-16 px-4 bg-gradient-to-b from-maroon-50 to-burgundy-50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
@@ -150,20 +209,96 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[...Array(6)].map((_, i) => (
+                <Card key={i} className="border-maroon-200">
+                  <CardContent className="p-6">
+                    <div className="animate-pulse">
+                      <div className="bg-gray-300 h-48 rounded mb-4"></div>
+                      <div className="bg-gray-300 h-4 rounded mb-2"></div>
+                      <div className="bg-gray-300 h-4 rounded w-2/3"></div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : featuredProducts.length > 0 ? (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {featuredProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+              <div className="text-center mt-12">
+                <Link href="/products">
+                  <Button size="lg" className="bg-maroon-700 hover:bg-maroon-800 text-white">
+                    View All Products
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+              </div>
+            </>
+          ) : (
+            /* Launching Soon Section for Public Users */
+            <div className="text-center py-16">
+              <Card className="border-maroon-200 bg-gradient-to-br from-white via-maroon-50 to-flame-50 shadow-xl max-w-2xl mx-auto">
+                <CardContent className="p-12">
+                  <div className="mb-8">
+                    <div className="relative inline-block">
+                      <Sparkles className="h-16 w-16 text-flame-500 mx-auto animate-pulse" />
+                      <Star className="h-6 w-6 text-maroon-600 absolute -top-2 -right-2 animate-bounce" />
+                    </div>
+                  </div>
 
-          <div className="text-center mt-12">
-            <Link href="/products">
-              <Button size="lg" className="bg-maroon-700 hover:bg-maroon-800 text-white">
-                View All Products
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-          </div>
+                  <Badge className="mb-6 bg-gradient-to-r from-maroon-600 to-flame-600 text-white px-4 py-2 text-sm font-semibold">
+                    Coming Soon
+                  </Badge>
+
+                  <h3 className="text-3xl md:text-4xl font-bold text-maroon-900 mb-4">Launching Soon</h3>
+
+                  <p className="text-lg text-maroon-700 mb-6 leading-relaxed">
+                    We're preparing something special for you! Our premium collection of camphor and incense products
+                    will be available soon. Get ready to experience divine fragrance like never before.
+                  </p>
+
+                  <div className="space-y-4 mb-8">
+                    <div className="flex items-center justify-center gap-2 text-maroon-600">
+                      <Shield className="h-5 w-5" />
+                      <span>Premium Quality Products</span>
+                    </div>
+                    <div className="flex items-center justify-center gap-2 text-maroon-600">
+                      <Leaf className="h-5 w-5" />
+                      <span>100% Natural Ingredients</span>
+                    </div>
+                    <div className="flex items-center justify-center gap-2 text-maroon-600">
+                      <Award className="h-5 w-5" />
+                      <span>Traditional Craftsmanship</span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <Link href="/contact">
+                      <Button size="lg" className="bg-maroon-600 hover:bg-maroon-700 text-white px-8">
+                        <Mail className="mr-2 h-5 w-5" />
+                        Get Notified
+                      </Button>
+                    </Link>
+                    <Link href="/about">
+                      <Button
+                        size="lg"
+                        variant="outline"
+                        className="border-maroon-600 text-maroon-700 hover:bg-maroon-50 bg-transparent"
+                      >
+                        Learn More
+                        <ArrowRight className="ml-2 h-5 w-5" />
+                      </Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
         </div>
       </section>
 
@@ -180,24 +315,9 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <TestimonialCard
-              name="Priya Sharma"
-              location="Mumbai"
-              rating={5}
-              comment="The camphor quality is exceptional! It burns cleanly and the fragrance is divine. I've been using Arathy products for years and they never disappoint."
-            />
-            <TestimonialCard
-              name="Rajesh Kumar"
-              location="Delhi"
-              rating={5}
-              comment="Best incense sticks I've ever used. The sandalwood fragrance is authentic and long-lasting. Perfect for daily prayers and meditation."
-            />
-            <TestimonialCard
-              name="Meera Patel"
-              location="Ahmedabad"
-              rating={4}
-              comment="Excellent quality agarbathy. The packaging is good and the products arrive fresh. Highly recommended for all spiritual needs."
-            />
+            {testimonials.map((testimonial, index) => (
+              <TestimonialCard key={index} testimonial={testimonial} />
+            ))}
           </div>
         </div>
       </section>
@@ -222,8 +342,8 @@ export default function HomePage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-maroon-900 mb-2">Phone</h3>
-                  <p className="text-maroon-600">+91 7907417217 </p>
-                  <p className="text-maroon-600">+91 9947362795  </p>
+                  <p className="text-maroon-600">+91 7907417217</p>
+                  <p className="text-maroon-600">+91 9947362795</p>
                 </div>
               </div>
 
@@ -233,8 +353,7 @@ export default function HomePage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-maroon-900 mb-2">Email</h3>
-                  <p className="text-maroon-600">info@arathycamphor.com</p>
-                  <p className="text-maroon-600">orders@arathycamphor.com</p>
+                  <p className="text-maroon-600">infoarathicamphor@gmail.com</p>
                 </div>
               </div>
 
@@ -245,11 +364,11 @@ export default function HomePage() {
                 <div>
                   <h3 className="font-semibold text-maroon-900 mb-2">Address</h3>
                   <p className="text-maroon-600">
-                    123 Temple Street
+                    Holy Maries Convent Road
                     <br />
-                    Sacred Gardens, Mumbai
+                    Kumbalam PO, Ernakulam
                     <br />
-                    Maharashtra 400001, India
+                    Kerala, India - 682506
                   </p>
                 </div>
               </div>
@@ -283,7 +402,7 @@ export default function HomePage() {
                   <p className="text-sm text-flame-200">& Agarbathy</p>
                 </div>
               </div>
-              <p className="text-maroon-200 text-sm">Bringing divine fragrance to your spiritual journey since 1985.</p>
+              <p className="text-maroon-200 text-sm">Bringing divine fragrance to your spiritual journey.</p>
             </div>
 
             <div>
@@ -331,11 +450,14 @@ export default function HomePage() {
             </div>
 
             <div>
-              <h4 className="font-semibold mb-4">Connect</h4>
+              <h4 className="font-semibold mb-4">Contact Info</h4>
               <div className="space-y-2 text-sm">
-                <p className="text-maroon-200">+91 98765 43210</p>
-                <p className="text-maroon-200">info@arathycamphor.com</p>
-                <p className="text-maroon-200">Mumbai, Maharashtra</p>
+                <p className="text-maroon-200">+91 7907417217</p>
+                <p className="text-maroon-200">+91 9947362795</p>
+                <p className="text-maroon-200">infoarathicamphor@gmail.com</p>
+                <p className="text-maroon-200">Holy Maries Convent Road</p>
+                <p className="text-maroon-200">Kumbalam PO, Ernakulam</p>
+                <p className="text-maroon-200">Kerala, India - 682506</p>
               </div>
             </div>
           </div>
