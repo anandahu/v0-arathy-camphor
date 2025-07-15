@@ -1,62 +1,81 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import SiteHeader from "@/components/site-header"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Flame, Leaf, Heart, Award, ArrowRight, Users, Clock, Shield } from "lucide-react"
 import DecorativePattern from "@/components/decorative-pattern"
 import DecorativeDivider from "@/components/decorative-divider"
-import { ArrowLeft, Award, Users, Globe, Heart, Leaf, Star } from "lucide-react"
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-amber-50 to-yellow-50">
-      <SiteHeader />
-
-      <div className="container mx-auto px-4 py-8 mt-16">
+    <div className="min-h-screen bg-gradient-to-b from-maroon-50 via-burgundy-50 to-flame-50">
+      <div className="container mx-auto px-4 py-8">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 mb-6">
-          <Link href="/" className="flex items-center text-amber-600 hover:text-amber-800">
-            <ArrowLeft className="h-4 w-4 mr-1" />
-            Back to Home
-          </Link>
-        </div>
+        <Breadcrumb className="mb-6">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Home</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>About Us</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
 
         {/* Hero Section */}
         <section className="text-center mb-16">
-          <DecorativePattern className="mx-auto mb-6 w-16 h-16 text-amber-400" />
-          <h1 className="text-4xl md:text-5xl font-bold text-amber-900 mb-6">About Arathy</h1>
-          <p className="text-xl text-amber-700 max-w-3xl mx-auto leading-relaxed">
-            For over three decades, Arathy Camphor & Agarbathy has been dedicated to creating premium spiritual products
-            that enhance your connection with the divine.
+          <DecorativePattern className="mx-auto mb-6 text-maroon-300" />
+          <h1 className="text-4xl md:text-5xl font-bold text-maroon-900 mb-6">About Arathy Camphor</h1>
+          <p className="text-xl text-maroon-600 max-w-3xl mx-auto leading-relaxed">
+            Preserving sacred traditions through premium quality spiritual products, crafted with devotion and care for
+            your divine moments.
           </p>
         </section>
 
         {/* Story Section */}
         <section className="mb-16">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl font-bold text-amber-900 mb-6">Our Story</h2>
-              <div className="space-y-4 text-amber-700">
-                <p>
-                  Founded in 2019 by a family passionate about preserving traditional spiritual practices, Arathy began
-                  as a small workshop dedicated to creating authentic camphor and incense products.
-                </p>
-                <p>
-                  What started as a humble endeavor has grown into one of India's most trusted names in spiritual
-                  products, serving thousands of families, temples, and spiritual centers across the nation.
-                </p>
-                <p>
-                  Our commitment to quality, tradition, and spiritual authenticity has remained unchanged throughout our
-                  journey, ensuring that every product carries the essence of devotion and purity.
-                </p>
-              </div>
+              <Badge className="mb-4 bg-maroon-100 text-maroon-800 border-maroon-200">Our Story</Badge>
+              <h2 className="text-3xl md:text-4xl font-bold text-maroon-900 mb-6">A Journey of Devotion</h2>
+              <p className="text-lg text-maroon-700 mb-6 leading-relaxed">
+                Arathy Camphor & Agarbathy began with a simple yet profound mission: to provide devotees with the
+                purest, most authentic spiritual products that enhance their connection with the divine.
+              </p>
+              <p className="text-lg text-maroon-700 mb-6 leading-relaxed">
+                Our journey is rooted in tradition, guided by devotion, and committed to excellence. Every product we
+                create carries the essence of our dedication to preserving the sacred rituals that have been passed down
+                through generations.
+              </p>
+              <p className="text-lg text-maroon-700 mb-8 leading-relaxed">
+                From our location in Kerala, we serve families across India, bringing them the finest camphor and
+                incense products that transform ordinary moments into sacred experiences.
+              </p>
+              <Button asChild size="lg" className="bg-maroon-600 hover:bg-maroon-700 text-white">
+                <Link href="/products">
+                  Explore Our Products
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
             </div>
             <div className="relative">
               <img
-                src="/images/incense-background-new.jpeg"
-                alt="Our Heritage"
-                className="w-full h-96 object-cover rounded-lg shadow-lg"
+                src="/images/ritual-ceremony-new.png"
+                alt="Traditional ritual ceremony"
+                className="rounded-lg shadow-lg w-full"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-amber-900/20 to-transparent rounded-lg"></div>
+              <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-maroon-600 rounded-full flex items-center justify-center">
+                <Flame className="h-12 w-12 text-white" />
+              </div>
             </div>
           </div>
         </section>
@@ -64,47 +83,67 @@ export default function AboutPage() {
         <DecorativeDivider />
 
         {/* Values Section */}
-        <section className="mb-16">
+        <section className="py-16">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-amber-900 mb-4">Our Values</h2>
-            <p className="text-lg text-amber-700">The principles that guide everything we do</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-maroon-900 mb-4">Our Values</h2>
+            <p className="text-lg text-maroon-600 max-w-2xl mx-auto">
+              The principles that guide us in creating exceptional spiritual products for your sacred moments.
+            </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card className="border-amber-200 text-center hover:shadow-lg transition-shadow">
-              <CardContent className="p-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <Card className="border-maroon-200 hover:shadow-lg transition-shadow bg-gradient-to-br from-white to-maroon-50">
+              <CardHeader className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-maroon-600 to-burgundy-700 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Leaf className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold text-amber-900 mb-3">Purity</h3>
-                <p className="text-amber-700">
-                  We use only the finest natural ingredients, ensuring our products are pure and free from harmful
-                  chemicals.
+                <CardTitle className="text-maroon-900">Purity</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-maroon-600 text-center">
+                  We use only the finest natural ingredients, ensuring every product is pure and authentic.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="border-amber-200 text-center hover:shadow-lg transition-shadow">
-              <CardContent className="p-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Card className="border-maroon-200 hover:shadow-lg transition-shadow bg-gradient-to-br from-white to-maroon-50">
+              <CardHeader className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-flame-500 to-flame-600 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Heart className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold text-amber-900 mb-3">Devotion</h3>
-                <p className="text-amber-700">
-                  Every product is crafted with devotion and blessed with traditional rituals to enhance your spiritual
-                  experience.
+                <CardTitle className="text-maroon-900">Devotion</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-maroon-600 text-center">
+                  Every product is crafted with love and spiritual devotion, honoring sacred traditions.
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="border-amber-200 text-center hover:shadow-lg transition-shadow">
-              <CardContent className="p-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Star className="h-8 w-8 text-white" />
+            <Card className="border-maroon-200 hover:shadow-lg transition-shadow bg-gradient-to-br from-white to-maroon-50">
+              <CardHeader className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-burgundy-600 to-maroon-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Award className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold text-amber-900 mb-3">Excellence</h3>
-                <p className="text-amber-700">
-                  We maintain the highest standards of quality in every aspect of our production and service.
+                <CardTitle className="text-maroon-900">Excellence</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-maroon-600 text-center">
+                  We maintain the highest standards of quality in every aspect of our production process.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-maroon-200 hover:shadow-lg transition-shadow bg-gradient-to-br from-white to-maroon-50">
+              <CardHeader className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-600 to-green-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Shield className="h-8 w-8 text-white" />
+                </div>
+                <CardTitle className="text-maroon-900">Trust</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-maroon-600 text-center">
+                  Building lasting relationships with our customers through reliability and authenticity.
                 </p>
               </CardContent>
             </Card>
@@ -113,136 +152,59 @@ export default function AboutPage() {
 
         <DecorativeDivider />
 
-        {/* Achievements Section */}
-        <section className="mb-16">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-amber-900 mb-4">Our Achievements</h2>
-            <p className="text-lg text-amber-700">Milestones that mark our journey</p>
+        {/* Mission Section */}
+        <section className="py-16 bg-gradient-to-r from-maroon-900 via-burgundy-800 to-maroon-900 text-white rounded-lg relative overflow-hidden">
+          <div className="absolute inset-0 opacity-10">
+            <img src="/images/temple-ritual.png" alt="Temple Ritual" className="w-full h-full object-cover" />
           </div>
-
-          <div className="grid md:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Award className="h-8 w-8 text-white" />
+          <div className="relative z-10 text-center px-8">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">Our Mission</h2>
+            <p className="text-xl text-gray-200 max-w-4xl mx-auto leading-relaxed mb-8">
+              To preserve and promote the sacred traditions of spiritual worship by providing devotees with the purest,
+              most authentic camphor and incense products that enhance their divine connection and bring peace to their
+              spiritual journey.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+              <div className="text-center">
+                <Users className="h-12 w-12 text-flame-300 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2">Community</h3>
+                <p className="text-gray-300">Serving families across India with dedication</p>
               </div>
-              <h3 className="text-2xl font-bold text-amber-900">7+</h3>
-              <p className="text-amber-700">Years of Excellence</p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Users className="h-8 w-8 text-white" />
+              <div className="text-center">
+                <Clock className="h-12 w-12 text-flame-300 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2">Tradition</h3>
+                <p className="text-gray-300">Preserving ancient spiritual practices</p>
               </div>
-              <h3 className="text-2xl font-bold text-amber-900">3000+</h3>
-              <p className="text-amber-700">Happy Customers</p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Globe className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold text-amber-900">100+</h3>
-              <p className="text-amber-700">Cities Served</p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Star className="h-8 w-8 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold text-amber-900">4.9/5</h3>
-              <p className="text-amber-700">Customer Rating</p>
-            </div>
-          </div>
-        </section>
-
-        {/* Process Section */}
-        <section className="mb-16">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-amber-900 mb-4">Our Process</h2>
-            <p className="text-lg text-amber-700">How we create products that touch your soul</p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <img
-                src="/images/prayer-ceremony.png"
-                alt="Traditional Process"
-                className="w-full h-80 object-cover rounded-lg shadow-lg"
-              />
-            </div>
-            <div className="space-y-6">
-              <div className="flex items-start gap-4">
-                <div className="w-8 h-8 bg-amber-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
-                  1
-                </div>
-                <div>
-                  <h3 className="font-semibold text-amber-900 mb-2">Sacred Sourcing</h3>
-                  <p className="text-amber-700">
-                    We carefully source the finest natural ingredients from trusted suppliers.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="w-8 h-8 bg-amber-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
-                  2
-                </div>
-                <div>
-                  <h3 className="font-semibold text-amber-900 mb-2">Traditional Crafting</h3>
-                  <p className="text-amber-700">
-                    Our skilled artisans use time-honored techniques passed down through generations.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="w-8 h-8 bg-amber-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
-                  3
-                </div>
-                <div>
-                  <h3 className="font-semibold text-amber-900 mb-2">Quality Assurance</h3>
-                  <p className="text-amber-700">
-                    Every product undergoes rigorous quality checks to ensure perfection.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="w-8 h-8 bg-amber-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
-                  4
-                </div>
-                <div>
-                  <h3 className="font-semibold text-amber-900 mb-2">Blessed Packaging</h3>
-                  <p className="text-amber-700">
-                    Products are blessed and packaged with care to preserve their spiritual essence.
-                  </p>
-                </div>
+              <div className="text-center">
+                <Flame className="h-12 w-12 text-flame-300 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2">Quality</h3>
+                <p className="text-gray-300">Uncompromising standards in every product</p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="text-center py-16 bg-gradient-to-r from-amber-100 to-orange-100 rounded-lg">
-          <h2 className="text-3xl font-bold text-amber-900 mb-4">Join Our Spiritual Journey</h2>
-          <p className="text-lg text-amber-700 mb-8 max-w-2xl mx-auto">
-            Experience the divine fragrance and spiritual connection that our products bring to your daily rituals.
+        {/* Contact CTA */}
+        <section className="py-16 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-maroon-900 mb-6">Connect With Us</h2>
+          <p className="text-lg text-maroon-600 max-w-2xl mx-auto mb-8">
+            Have questions about our products or want to learn more about our story? We'd love to hear from you.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/products">
-              <Button size="lg" className="bg-amber-600 hover:bg-amber-700 text-white">
-                Explore Products
-              </Button>
-            </Link>
-            <Link href="/contact">
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-amber-600 text-amber-700 hover:bg-amber-50 bg-transparent"
-              >
-                Contact Us
-              </Button>
-            </Link>
+            <Button asChild size="lg" className="bg-maroon-600 hover:bg-maroon-700 text-white">
+              <Link href="/contact">
+                Get in Touch
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="border-maroon-600 text-maroon-700 hover:bg-maroon-50 bg-transparent"
+            >
+              <Link href="/products">View Products</Link>
+            </Button>
           </div>
         </section>
       </div>

@@ -5,7 +5,6 @@ import { useState } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Package, BarChart3, Home, Menu, Bell, Search, LogOut, Plus, List } from "lucide-react"
 import { Input } from "@/components/ui/input"
@@ -74,18 +73,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           )
         })}
       </nav>
-
-      {/* Quick Stats */}
-      <div className="p-4 border-t border-maroon-200">
-        <Card className="border-maroon-200">
-          <CardContent className="p-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-maroon-900">{database.getAllProducts().length}</p>
-              <p className="text-sm text-maroon-600">Total Products</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
 
       {/* Back to Website & Logout */}
       <div className="p-4 border-t border-maroon-200 space-y-2">

@@ -2,13 +2,13 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useToast } from "@/hooks/use-toast"
-import { Lock, Eye, EyeOff, Shield } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Eye, EyeOff, Lock, User } from "lucide-react"
 import { database } from "@/lib/database-persistent"
 
 interface AdminAuthProps {
@@ -16,44 +16,26 @@ interface AdminAuthProps {
 }
 
 export default function AdminAuth({ onAuthenticated }: AdminAuthProps) {
+  const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
+  const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const { toast } = useToast()
-
-  const validPasswords = ["arathy2024", "admin123", "camphor@admin"]
-
-  // Check if already authenticated on component mount
-  useEffect(() => {
-    if (database.isAuthenticated()) {
-      onAuthenticated()
-    }
-  }, [onAuthenticated])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+    setError("")
 
-    // Simulate authentication delay
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    if (validPasswords.includes(password)) {
+    // Simple demo authentication
+    if (username === "admin" && password === "admin123") {
       database.setAuthSession(true)
-      toast({
-        title: "Authentication Successful",
-        description: "Welcome to Arathy Admin Panel",
-      })
       onAuthenticated()
     } else {
-      toast({
-        title: "Authentication Failed",
-        description: "Invalid password. Please try again.",
-        variant: "destructive",
-      })
+      setError("Invalid username or password")
     }
 
     setIsLoading(false)
-    setPassword("")
   }
 
   return (
@@ -63,67 +45,113 @@ export default function AdminAuth({ onAuthenticated }: AdminAuthProps) {
         <div className="text-center mb-8">
           <img
             src="/images/arathy-logo.jpg"
-            alt="Arathy Camphor Logo"
-            className="h-16 mx-auto mb-4 rounded-lg shadow-lg"
+            alt="Arathy Logo"
+            className="h-16 w-auto mx-auto rounded-lg shadow-lg mb-4"
           />
-          <h1 className="text-2xl font-bold text-white mb-2">Admin Access</h1>
-          <p className="text-maroon-200">Enter password to continue</p>
+          <h1 className="text-2xl font-bold text-white">Admin Login</h1>
+          <p className="text-maroon-200">Access your product management dashboard</p>
         </div>
 
-        <Card className="border-maroon-600 shadow-2xl bg-white/95 backdrop-blur-sm">
-          <CardHeader className="text-center">
-            <div className="w-16 h-16 bg-gradient-to-br from-maroon-600 to-burgundy-700 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Shield className="h-8 w-8 text-white" />
-            </div>
-            <CardTitle className="text-maroon-900">Secure Login</CardTitle>
+        {/* Login Form */}
+        <Card className="border-maroon-200 shadow-2xl">
+          <CardHeader className="bg-gradient-to-r from-maroon-700 to-burgundy-800 text-white rounded-t-lg">
+            <CardTitle className="flex items-center gap-2">
+              <Lock className="h-5 w-5" />
+              Secure Login
+            </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-6">
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="password" className="text-maroon-900">
-                  Admin Password
+              <div className="space-y-2">
+                <Label htmlFor="username" className="text-maroon-900">
+                  Username
                 </Label>
                 <div className="relative">
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-maroon-400 h-4 w-4" />
+                  <Input
+                    id="username"
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Enter your username"
+                    className="pl-10 border-maroon-200 focus:border-maroon-400"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-maroon-900">
+                  Password
+                </Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-maroon-400 h-4 w-4" />
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter admin password"
+                    placeholder="Enter your password"
+                    className="pl-10 pr-10 border-maroon-200 focus:border-maroon-400"
                     required
-                    className="border-maroon-200 focus:border-maroon-400 pr-10"
                   />
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? (
-                      <EyeOff className="h-4 w-4 text-maroon-600" />
+                      <EyeOff className="h-4 w-4 text-maroon-400" />
                     ) : (
-                      <Eye className="h-4 w-4 text-maroon-600" />
+                      <Eye className="h-4 w-4 text-maroon-400" />
                     )}
                   </Button>
                 </div>
               </div>
 
+              {error && (
+                <Alert className="border-red-200 bg-red-50">
+                  <AlertDescription className="text-red-800">{error}</AlertDescription>
+                </Alert>
+              )}
+
               <Button
                 type="submit"
+                className="w-full bg-maroon-600 hover:bg-maroon-700 text-white"
                 disabled={isLoading}
-                className="w-full bg-maroon-700 hover:bg-maroon-800 text-white"
               >
-                {isLoading ? (
-                  <div className="flex items-center">
-                    <div className="loading-spinner mr-2"></div>
-                    Authenticating...
-                  </div>
-                ) : (
-                  <>
-                    <Lock className="h-4 w-4 mr-2" />
-                    Access Admin Panel
-                  </>
-                )}
+                {isLoading ? "Signing in..." : "Sign In"}
               </Button>
             </form>
+
+            {/* Demo Credentials */}
+            <div className="mt-6 p-4 bg-maroon-50 rounded-lg border border-maroon-200">
+              <h3 className="text-sm font-semibold text-maroon-900 mb-2">Demo Credentials:</h3>
+              <div className="text-sm text-maroon-700 space-y-1">
+                <p>
+                  <strong>Username:</strong> admin
+                </p>
+                <p>
+                  <strong>Password:</strong> admin123
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Back to Website */}
+        <div className="text-center mt-6">
+          <Button
+            variant="ghost"
+            className="text-maroon-200 hover:text-white hover:bg-maroon-800"
+            onClick={() => (window.location.href = "/")}
+          >
+            ← Back to Website
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}

@@ -5,21 +5,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import {
-  Flame,
-  Leaf,
-  ArrowRight,
-  Phone,
-  Mail,
-  MapPin,
-  Settings,
-  Award,
-  Shield,
-  Clock,
-  Sparkles,
-  Star,
-} from "lucide-react"
-import SiteHeader from "@/components/site-header"
+import { Flame, Leaf, ArrowRight, Phone, Mail, MapPin, Award, Shield, Clock, Sparkles, Star } from "lucide-react"
 import ProductCard from "@/components/product-card"
 import TestimonialCard from "@/components/testimonial-card"
 import EnquiryForm from "@/components/enquiry-form"
@@ -33,6 +19,11 @@ export default function HomePage() {
 
   useEffect(() => {
     loadFeaturedProducts()
+
+    // Set up interval to refresh products every 5 seconds to show new admin additions
+    const interval = setInterval(loadFeaturedProducts, 5000)
+
+    return () => clearInterval(interval)
   }, [])
 
   const loadFeaturedProducts = () => {
@@ -76,22 +67,6 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-maroon-50 via-burgundy-50 to-flame-50">
-      <SiteHeader />
-
-      {/* Subtle Admin Panel Link - Less Prominent */}
-      <div className="fixed bottom-4 left-4 z-40">
-        <Link href="/admin">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="bg-gray-100/80 backdrop-blur-sm border border-gray-200 text-gray-600 hover:bg-gray-200/80 shadow-sm opacity-60 hover:opacity-100 transition-all duration-300 text-xs"
-          >
-            <Settings className="h-3 w-3 mr-1" />
-            Admin
-          </Button>
-        </Link>
-      </div>
-
       {/* Hero Section */}
       <section
         className="relative py-20 px-4 text-center overflow-hidden"
