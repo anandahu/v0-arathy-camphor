@@ -68,15 +68,13 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-maroon-50 via-burgundy-50 to-flame-50">
       {/* Hero Section */}
-      <section
-        className="relative py-20 px-4 text-center overflow-hidden"
-        style={{
-          backgroundImage: `linear-gradient(rgba(139, 26, 26, 0.7), rgba(116, 29, 29, 0.5)), url('/images/temple-ritual.png')`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-b from-maroon-900/40 via-burgundy-800/40 to-maroon-800/40"></div>
+      <section className="relative py-20 px-4 text-center overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <video autoPlay muted loop playsInline className="w-full h-full object-cover">
+            <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/vid1-2dmU0qFQO1COGTYyHBbdEdxgvOKJhy.mp4" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-gradient-to-b from-maroon-900/40 via-burgundy-800/40 to-maroon-800/40"></div>
+        </div>
         <div className="relative max-w-4xl mx-auto">
           <DecorativePattern className="absolute -top-10 -left-10 w-20 h-20 text-flame-300/30" />
           <DecorativePattern className="absolute -bottom-10 -right-10 w-20 h-20 text-flame-300/30" />

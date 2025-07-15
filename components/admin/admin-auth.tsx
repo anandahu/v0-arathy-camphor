@@ -39,8 +39,14 @@ export default function AdminAuth({ onAuthenticated }: AdminAuthProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-maroon-900 via-burgundy-800 to-maroon-900 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen relative flex items-center justify-center p-4 overflow-hidden">
+      {/* Background Video */}
+      <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover z-0">
+        <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/vid1-2dmU0qFQO1COGTYyHBbdEdxgvOKJhy.mp4" type="video/mp4" />
+      </video>
+      <div className="absolute inset-0 bg-gradient-to-br from-maroon-900/70 via-burgundy-800/70 to-maroon-900/70 z-10"></div>
+
+      <div className="relative z-20 w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
           <img
@@ -125,19 +131,6 @@ export default function AdminAuth({ onAuthenticated }: AdminAuthProps) {
                 {isLoading ? "Signing in..." : "Sign In"}
               </Button>
             </form>
-
-            {/* Demo Credentials */}
-            <div className="mt-6 p-4 bg-maroon-50 rounded-lg border border-maroon-200">
-              <h3 className="text-sm font-semibold text-maroon-900 mb-2">Demo Credentials:</h3>
-              <div className="text-sm text-maroon-700 space-y-1">
-                <p>
-                  <strong>Username:</strong> admin
-                </p>
-                <p>
-                  <strong>Password:</strong> admin123
-                </p>
-              </div>
-            </div>
           </CardContent>
         </Card>
 
